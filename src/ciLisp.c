@@ -65,6 +65,7 @@ AST_NODE *createNumberNode(double value, NUM_TYPE type)
     // TODO set the AST_NODE's type, assign values to contained NUM_AST_NODE
 
     node->type = NUM_NODE_TYPE;
+
     node->data.number.type = type;
     node->data.number.value = value;
     eval(node);
@@ -99,22 +100,32 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)
 
 
     node->type = FUNC_NODE_TYPE;
-
-
+    // funcname will be a func
     int position;
-    position = resolveFunc(funcName);
+    int comparison;
+    size_t NumberOfElements = sizeof(funcNames)/sizeof(funcNames[0]);
+    int size = (int)NumberOfElements;
+    for (position = 0; position < size; position++ ) {
+
+        comparison = strcmp(funcNames[position], funcName);
+        if (comparison == 0) {
+            node->data.function.oper = position;
+            node->data.function.op1 = op1;
+            node->data.function.op2 = op2;
+            free(funcName);
+            eval(node);
+            // evalFuncNode(&node->data.function);
+            break;
+        }
+    }
     if (position == CUSTOM_OPER) {
-        node->data.function.ident = funcName;
-        eval(node);
-    } else {
         node->data.function.oper = position;
         node->data.function.op1 = op1;
         node->data.function.op2 = op2;
+        node->data.function.ident = funcName;
         free(funcName);
+        eval(node);
     }
-    eval(node);
-
-
     return node;
 }
 
@@ -175,21 +186,142 @@ RET_VAL eval(AST_NODE *node)
     return result;
 }
 
+
+
+RET_VAL negHelper(double op1, RET_VAL result) {
+    result.value = -1 * op1;
+    return result;
+}
+
+
+RET_VAL absHelper (double op1, RET_VAL result)
+{
+    result.value = fabs(op1);
+    return result;
+}
+
+RET_VAL expHelper (double op1, RET_VAL result)
+{
+    if (result.type == INT_TYPE) {
+        result.value = round(exp(op1));
+        return result;
+    }
+    result.value = exp(op1);
+    return result;
+}
+
+RET_VAL sqrtHelper (double op1, RET_VAL result)
+{
+    if (result.type == INT_TYPE) {
+        result.value = round(sqrt(op1));
+        return result;
+    }
+    result.value = sqrt(op1);
+    return result;
+}
+
+RET_VAL  addHelper (double op1, double op2, RET_VAL result) {
+    result.value = op1 + op2;
+    return result;
+}
+
+RET_VAL  subHelper (double op1, double op2, RET_VAL result) {
+    result.value = op1 - op2;
+    return result;
+}
+
+RET_VAL  multHelper (double op1, double op2, RET_VAL result) {
+    result.value = op1 * op2;
+    return result;
+}
+RET_VAL  remainderHelper (double op1, double op2, RET_VAL result) {
+    if (result.type == INT_TYPE) {
+        result.value = round(remainder(op1,op2));
+        return result;
+    }
+    result.value = remainder(op1,op2);
+    return result;
+}
+
+RET_VAL  divHelper (double op1, double op2, RET_VAL result) {
+
+    if (result.type == INT_TYPE) {
+        result.value = round(op1/op2);
+        return result;
+    }
+    result.value = op1 / op2;
+    return result;
+}
+
+RET_VAL logHelper (double op1, RET_VAL result)
+{
+    if (result.type == INT_TYPE) {
+        result.value = round(log(op1));
+        return result;
+    }
+    result.value = log(op1);
+    return result;
+}
+// power
+// max
+// min
+RET_VAL  powerHelper (double op1, double op2, RET_VAL result) {
+    result.value = pow(op1,op2);
+    return result;
+}
+
+RET_VAL  maxHelper (double op1, double op2, RET_VAL result) {
+    result.value = fmax(op1,op2);
+    return result;
+}
+
+RET_VAL  minHelper (double op1, double op2, RET_VAL result) {
+    result.value = fmin(op1,op2);
+    return result;
+}
+
+RET_VAL exp2Helper (double op1, RET_VAL result)
+{
+    if (result.type == INT_TYPE) {
+        result.value = round(exp(op1));
+        return result;
+    }
+    result.value = exp(op1);
+    return result;
+}
+
+RET_VAL cbrtHelper (double op1, RET_VAL result)
+{
+    if (result.type == INT_TYPE) {
+        result.value = round(cbrt(op1));
+        return result;
+    }
+    result.value = exp(op1);
+    return result;
+}
+
+RET_VAL  hypotHelper (double op1, double op2, RET_VAL result) {
+    if (result.type == INT_TYPE) {
+        result.value = round(hypot(op1,op2));
+        return result;
+    }
+    result.value = hypot(op1,op2);
+    return result;
+}
+
+
+
 // returns a pointer to the NUM_AST_NODE (aka RET_VAL) referenced by node.
 // DOES NOT allocate space for a new RET_VAL.
 RET_VAL evalNumNode(NUM_AST_NODE *numNode)
 {
     if (!numNode)
         return (RET_VAL){INT_TYPE, NAN};
-
     RET_VAL result = {INT_TYPE, NAN};
-
     // TODO populate result with the values stored in the node.
     // SEE: AST_NODE, AST_NODE_TYPE, NUM_AST_NODE
-
     result.value = numNode->value;
     result.type = numNode->type;
-
     return result;
 }
 
@@ -198,60 +330,65 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
 {
     if (!funcNode)
         return (RET_VAL){INT_TYPE, NAN};
-
     RET_VAL result = {INT_TYPE, NAN};
-
     // TODO populate result with the result of running the function on its operands.
     // SEE: AST_NODE, AST_NODE_TYPE, FUNC_AST_NODE
     result.type = funcNode->op1->data.number.type;
+    double op1 = funcNode->op1->data.number.value;
+    double op2 = 0; // initial
+    if  (funcNode->op2 != NULL) {
+        op2 = funcNode->op2->data.number.value;
+    }
     switch (funcNode->oper) {
         case NEG_OPER:
-            result.value = (-1 * funcNode->op1->data.number.value);
+            // do something
+            result = negHelper(op1,result);
             break;
         case ABS_OPER:
-            result.value = (fabs(funcNode->op1->data.number.value));
+            result = absHelper(op1, result);
             break;
         case EXP_OPER:
-            result.value = exp(funcNode->op1->data.number.value);
+            result = expHelper(op1,result);
+            // result.value = exp(op1);
             break;
         case SQRT_OPER:
-            result.value = sqrt(funcNode->op1->data.number.value);
+            result = sqrtHelper(op1, result);
             break;
         case ADD_OPER:
-            result.value = funcNode->op1->data.number.value + funcNode->op2->data.number.value;
+            result = addHelper(op1, op2, result);
             break;
         case SUB_OPER:
-            result.value = funcNode->op1->data.number.value - funcNode->op2->data.number.value;
+            result = subHelper(op1,op2,result);
             break;
         case MULT_OPER:
-            result.value = funcNode->op1->data.number.value * funcNode->op2->data.number.value;
+            result = multHelper(op1,op2,result);
             break;
         case DIV_OPER:
-            result.value = funcNode->op1->data.number.value / funcNode->op2->data.number.value;
+            result = divHelper(op1,op2,result);
             break;
         case REMAINDER_OPER:
-            result.value = remainder(funcNode->op1->data.number.value, funcNode->op2->data.number.value);
+            result = remainderHelper(op1,op2,result);
             break;
         case LOG_OPER:
-            result.value = log(funcNode->op1->data.number.value);
+            result = logHelper(op1,result);
             break;
         case POW_OPER:
-            result.value = pow(funcNode->op1->data.number.value, funcNode->op2->data.number.value);
+            result = powerHelper(op1,op2,result);
             break;
         case MAX_OPER:
-            result.value = fmax(funcNode->op1->data.number.value, funcNode->op2->data.number.value);
+            result = maxHelper(op1,op2,result);
             break;
         case MIN_OPER:
-            result.value = fmin(funcNode->op1->data.number.value, funcNode->op2->data.number.value);
+            result = minHelper(op1,op2,result);
             break;
         case EXP2_OPER:
-            result.value = exp2(funcNode->op1->data.number.value);
+            result = exp2Helper(op1,result);
             break;
         case CBRT_OPER:
-            result.value = cbrt(funcNode->op1->data.number.value);
+            result = cbrtHelper(op1,result);
             break;
         case HYPOT_OPER:
-            result.value = hypot(funcNode->op1->data.number.value, funcNode->op2->data.number.value);
+            result = hypotHelper(op1,op2,result);
             break;
         case READ_OPER:
             break;
@@ -270,9 +407,6 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
         default:
             printf("oof");
     }
-
-
-
     return result;
 }
 
@@ -292,5 +426,8 @@ void printRetVal(RET_VAL val)
             // do something
             break;
     }
-}
 
+
+
+
+}
