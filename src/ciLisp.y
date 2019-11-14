@@ -48,8 +48,12 @@ s_expr:
         fprintf(stderr, "yacc: s_expr ::= error\n");
         yyerror("unexpected token");
         $$ = NULL;
-    };
 
+     } |
+     LPAREN let_section s_expr RPAREN {
+        fprintf(stderr, "yacc: s_expr ::= LET \n");
+        $$ = linkSymbolNode($2, $3);
+     };
 number:
     INT {
         fprintf(stderr, "yacc: number ::= INT\n");
@@ -59,9 +63,6 @@ number:
         fprintf(stderr, "yacc: number ::= DOUBLE\n");
         $$ = createNumberNode($1, DOUBLE_TYPE);
     };
-
-
-
 
 f_expr:
     LPAREN FUNC s_expr RPAREN {
@@ -76,21 +77,21 @@ f_expr:
     let_elem:
     LPAREN SYMBOL s_expr RPAREN {
     printf(stderr, "yacc: s_expr ::= LPAREN SYMBOL s_expr RPAREN\n");
-
+    $$ = createSymbolTableNode($2, $3);
     };
 
     let_list:
         LET let_elem {
-
+        $$ = $2;
     }
     |
      let_list  let_elem  {
-
+     $$ = addToSymbolTable($1 $2)
      };
 
      let_section:
      LPAREN let_list RPAREN {
-
+     $$ = $2;
      };
 
      symbol:
@@ -98,7 +99,6 @@ f_expr:
      fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
      $$ = createSymbolNode($1);
      };
-
 
 %%
 

@@ -438,5 +438,9 @@ SYMBOL_AST_NODE createSymbolTableNode (char* ideny) {
 
 }
 
+AST_NODE linkSymbolNode(SYMBOL_TABLE_NODE *first, AST_NODE second) {
+
+}
+
 
 
