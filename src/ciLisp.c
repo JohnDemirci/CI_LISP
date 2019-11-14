@@ -326,6 +326,8 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode)
 }
 
 
+
+
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
 {
     if (!funcNode)
@@ -426,8 +428,15 @@ void printRetVal(RET_VAL val)
             // do something
             break;
     }
+}
 
-
-
+AST_NODE createSymbolNode(char* ident) {
 
 }
+
+SYMBOL_AST_NODE createSymbolTableNode (char* ideny) {
+
+}
+
+
+

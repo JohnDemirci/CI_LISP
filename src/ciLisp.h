@@ -51,8 +51,16 @@ OPER_TYPE resolveFunc(char *);
 // You will expand this enum as you build the project.
 typedef enum {
     NUM_NODE_TYPE,
-    FUNC_NODE_TYPE
+    FUNC_NODE_TYPE,
+    SYMBOL_NODE_TYPE
 } AST_NODE_TYPE;
+
+
+typedef struct symbol_table_node {
+    char *ident;
+    struct ast_node *val;
+    struct symbol_table_node *next;
+} SYMBOL_TABLE_NODE;
 
 // Types of numeric values
 typedef enum {
@@ -79,13 +87,20 @@ typedef struct {
     struct ast_node *op2;
 } FUNC_AST_NODE;
 
+typedef struct symbol_ast_node {
+    char *ident;
+} SYMBOL_AST_NODE;
+
 // Generic Abstract Syntax Tree node. Stores the type of node,
 // and reference to the corresponding specific node (initially a number or function call).
 typedef struct ast_node {
     AST_NODE_TYPE type;
+    SYMBOL_TABLE_NODE *symbolTable;
+    struct ast_node *parent;
     union {
         NUM_AST_NODE number;
         FUNC_AST_NODE function;
+        SYMBOL_AST_NODE symbol;
     } data;
 } AST_NODE;
 
