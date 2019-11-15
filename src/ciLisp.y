@@ -86,7 +86,7 @@ f_expr:
     }
     |
      let_list  let_elem  {
-     $$ = addToSymbolTable($1 $2)
+     $$ = addToSymbolTable($1, $2);
      };
 
      let_section:
