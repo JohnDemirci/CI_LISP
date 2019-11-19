@@ -52,6 +52,25 @@ OPER_TYPE resolveFunc(char *funcName)
 // Sets the AST_NODE's type to number.
 // Populates the value of the contained NUMBER_AST_NODE with the argument value.
 // SEE: AST_NODE, NUM_AST_NODE, AST_NODE_TYPE.
+
+
+AST_NODE *createSymbolNode (char* ident) {
+    AST_NODE *node;
+    size_t nodeSize;
+    nodeSize = sizeof(AST_NODE);
+    if ((node = calloc(nodeSize, 1)) == NULL)
+        yyerror("Memory allocation failed!");
+    node->data.symbol.ident = (char *)malloc(sizeof(char *));
+    node->type = SYMBOL_NODE_TYPE;
+    strcpy(node->data.symbol.ident, ident);
+    eval(node);
+    return node;
+}
+
+
+
+
+
 AST_NODE *createNumberNode(double value, NUM_TYPE type)
 {
     AST_NODE *node;
@@ -97,7 +116,8 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)
     // For functions other than CUSTOM_OPER, you should free the funcName after you're assigned the OPER_TYPE.
 
     // funcName = (char*)malloc((strlen(funcName)+1)* sizeof(char));
-
+   /* node->data.function.op1 = ()malloc(sizeof(char *));
+    node->data.function.op2 = malloc(sizeof(char *));*/
 
     node->type = FUNC_NODE_TYPE;
     // funcname will be a func
@@ -179,12 +199,17 @@ RET_VAL eval(AST_NODE *node)
             // do something
             result = evalFuncNode(&node->data.function);
             break;
+        case SYMBOL_NODE_TYPE:
+            // RESULT = evalSyymbolNode
         default:
             yyerror("Invalid AST_NODE_TYPE, probably invalid writes somewhere!");
     }
 
     return result;
 }
+
+
+
 
 
 
@@ -262,9 +287,7 @@ RET_VAL logHelper (double op1, RET_VAL result)
     result.value = log(op1);
     return result;
 }
-// power
-// max
-// min
+
 RET_VAL  powerHelper (double op1, double op2, RET_VAL result) {
     result.value = pow(op1,op2);
     return result;
@@ -324,6 +347,8 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode)
     result.type = numNode->type;
     return result;
 }
+
+
 
 
 
@@ -450,30 +475,31 @@ AST_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr) {
     node->symbolTable->val = s_expr->symbolTable->val;
     node->symbolTable->next = NULL;
     return node;
+
+ /*   s_expr->symbolTable->ident = (char *)malloc(sizeof(char*));
+    s_expr->type = SYMBOL_NODE_TYPE;
+    strcpy(s_expr->symbolTable->ident, ident);
+    s_expr->symbolTable->next = NULL;
+    return s_expr;*/
+
+
+
 }
 
-AST_NODE *createSymbolNode (char* ident) {
-    AST_NODE *node;
-    size_t nodeSize;
-    nodeSize = sizeof(AST_NODE);
-    if ((node = calloc(nodeSize, 1)) == NULL)
-        yyerror("Memory allocation failed!");
-    node->data.symbol.ident = (char *)malloc(sizeof(char *));
-    node->type = SYMBOL_NODE_TYPE;
-    strcpy(node->data.symbol.ident, ident);
-    return node;
-}
+
 
 
 SYMBOL_TABLE_NODE *addToSymbolTable (SYMBOL_TABLE_NODE *list, SYMBOL_TABLE_NODE *item) {
-
+    if (item == NULL) {
+        item = list;
+        item->next = NULL;
+    }
+    item->next = list;
+    return item;
 }
 
 
 AST_NODE *linkSymbolNode (SYMBOL_TABLE_NODE* symbTable, AST_NODE *s_expr) {
-    s_expr->symbolTable = s_expr->symbolTable;
+    s_expr->symbolTable = symbTable;
     return  s_expr;
 }
-
-
-
