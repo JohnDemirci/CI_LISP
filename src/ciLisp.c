@@ -444,35 +444,36 @@ AST_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr) {
 
     if ((node = calloc(nodeSize, 1)) == NULL)
         yyerror("Memory allocation failed!");
-    char* id;
-    id = ident;
-    ident = (char *) malloc(sizeof(char*));
+    node->type =SYMBOL_NODE_TYPE;
+    node->symbolTable->ident = (char *) malloc(sizeof(char*));
     strcpy(node->symbolTable->ident, ident);
     node->symbolTable->val = s_expr->symbolTable->val;
-    node->type =SYMBOL_NODE_TYPE;
+    node->symbolTable->next = NULL;
     return node;
 }
 
 AST_NODE *createSymbolNode (char* ident) {
     AST_NODE *node;
     size_t nodeSize;
-    // allocate space for the fixed sie and the variable part (union)
     nodeSize = sizeof(AST_NODE);
     if ((node = calloc(nodeSize, 1)) == NULL)
         yyerror("Memory allocation failed!");
-    ident = (char *) malloc(sizeof(char*));
+    node->data.symbol.ident = (char *)malloc(sizeof(char *));
     node->type = SYMBOL_NODE_TYPE;
     strcpy(node->data.symbol.ident, ident);
     return node;
 }
 
 
-SYMBOL_TABLE_NODE addToSymbolTable (SYMBOL_TABLE_NODE *list, SYMBOL_TABLE_NODE *item) {
+SYMBOL_TABLE_NODE *addToSymbolTable (SYMBOL_TABLE_NODE *list, SYMBOL_TABLE_NODE *item) {
 
 }
 
 
-// addToSymbolTable
-// linkSymbolNode
-// createSymbolNode
+AST_NODE *linkSymbolNode (SYMBOL_TABLE_NODE* symbTable, AST_NODE *s_expr) {
+    s_expr->symbolTable = s_expr->symbolTable;
+    return  s_expr;
+}
+
+
 
