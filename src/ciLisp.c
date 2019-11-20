@@ -217,7 +217,7 @@ RET_VAL eval(AST_NODE *node)
 
 
 RET_VAL evalSyymbolNode (SYMBOL_AST_NODE *symbol) {
-    
+
 }
 
 SYMBOL_TABLE_NODE *findSymbol (char* ident, AST_NODE s_expr) {
