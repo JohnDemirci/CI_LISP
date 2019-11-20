@@ -55,9 +55,6 @@ typedef enum {
     SYMBOL_NODE_TYPE
 } AST_NODE_TYPE;
 
-
-
-
 // Types of numeric values
 typedef enum {
     INT_TYPE,
@@ -109,21 +106,21 @@ typedef struct ast_node {
 
 
 AST_NODE *createNumberNode(double value, NUM_TYPE type);
-
+AST_NODE *createSymbolNode (char* ident);
 AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2);
-
-void freeNode(AST_NODE *node);
+SYMBOL_TABLE_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr);
 
 RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode);
-SYMBOL_TABLE_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr);
+RET_VAL evalSymbolNode (AST_NODE *node);
+
 void printRetVal(RET_VAL val);
-AST_NODE *createSymbolNode (char* ident);
 AST_NODE *linkSymbolNode (SYMBOL_TABLE_NODE* symbTable, AST_NODE *s_expr);
 SYMBOL_TABLE_NODE *addToSymbolTable (SYMBOL_TABLE_NODE *list, SYMBOL_TABLE_NODE *item);
-RET_VAL evalSyymbolNode (AST_NODE *node);
 SYMBOL_TABLE_NODE *findSymbol (char* ident, AST_NODE *s_expr);
+
+void freeNode(AST_NODE *node);
 
 
 #endif

@@ -15,27 +15,8 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
 
 %%
 
-{int} {
-    yylval.dval = strtod(yytext, NULL);
-    fprintf(stderr, "lex: INT dval = %lf\n", yylval.dval);
-    return INT;
-}
-
-{double} {
-    yylval.dval = strtod(yytext, NULL);
-    fprintf(stderr, "lex: DOUBLE dval = %lf\n", yylval.dval);
-    return DOUBLE;
-}
-
 "quit" {
     return QUIT;
-    }
-
-{func} {
-    yylval.sval = (char *) malloc(strlen(yytext)*sizeof(char)+1);
-    strcpy(yylval.sval, yytext);
-    fprintf(stderr, "lex: FUNC sval = %s\n", yylval.sval);
-    return FUNC;
     }
 
 "(" {
@@ -49,12 +30,35 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
     }
 
 "let" {
- fprintf(stderr, "lex: LET\n");
-return LET;
+    fprintf(stderr, "lex: LET\n");
+    return LET;
+    }
 
-}
+{int} {
+    yylval.dval = strtod(yytext, NULL);
+    fprintf(stderr, "lex: INT dval = %lf\n", yylval.dval);
+    return INT;
+    }
 
+{double} {
+    yylval.dval = strtod(yytext, NULL);
+    fprintf(stderr, "lex: DOUBLE dval = %lf\n", yylval.dval);
+    return DOUBLE;
+    }
 
+{func} {
+    yylval.sval = (char *) malloc(strlen(yytext)*sizeof(char)+1);
+    strcpy(yylval.sval, yytext);
+    fprintf(stderr, "lex: FUNC sval = %s\n", yylval.sval);
+    return FUNC;
+    }
+
+{symbol} {
+    yylval.sval = (char *) malloc(strlen(yytext)*sizeof(char)+1);
+    strcpy(yylval.sval, yytext);
+    fprintf(stderr, "lex: SYMBOL sval = %s\n", yylval.sval);
+    return SYMBOL;
+    }
 
 [\n] {
     fprintf(stderr, "lex: EOL\n");
@@ -70,14 +74,6 @@ return LET;
     printf("ERROR: invalid character: >>%s<<\n", yytext);
     }
 
-
-{symbol} {
-    yylval.sval = (char *) malloc(strlen(yytext)*sizeof(char)+1);
-        strcpy(yylval.sval, yytext);
-        fprintf(stderr, "lex: SYMBOL sval = %s\n", yylval.sval);
-        return SYMBOL;
-}
-
 %%
 
 /*
@@ -85,7 +81,7 @@ return LET;
  */
 int main(void) {
 
-      freopen("/dev/null", "w", stderr); // except for this line that can be uncommented to throw away debug printouts
+    //freopen("/dev/null", "w", stderr); // except for this line that can be uncommented to throw away debug printouts
 
     char *s_expr_str = NULL;
     size_t s_expr_str_len = 0;

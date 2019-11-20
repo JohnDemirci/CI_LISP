@@ -7,8 +7,7 @@
     char *sval;
     struct ast_node *astNode;
     struct symbol_table_node *symNode;
-
-};
+}
 
 %token <sval> FUNC SYMBOL
 %token <dval> INT DOUBLE
@@ -33,11 +32,12 @@ s_expr:
         fprintf(stderr, "yacc: s_expr ::= number\n");
         $$ = $1;
     }
-    |
-    symbol {
-           $$ = $1;
-          }
+    | symbol {
+    	fprintf(stderr, "yacc: s_expr ::= symbol\n");
+    	$$ = $1;
+    }
     | f_expr {
+    	fprintf(stderr, "yacc: s_expr ::= f_expr\n");
         $$ = $1;
     }
     | QUIT {
@@ -49,11 +49,11 @@ s_expr:
         yyerror("unexpected token");
         $$ = NULL;
 
-     } |
-     LPAREN let_section s_expr RPAREN {
-        fprintf(stderr, "yacc: s_expr ::= LET \n");
+    }
+    | LPAREN let_section s_expr RPAREN {
+        fprintf(stderr, "yacc: s_expr ::= LPAREN let_section s_expr RPAREN \n");
         $$ = linkSymbolNode($2, $3);
-     };
+    };
 number:
     INT {
         fprintf(stderr, "yacc: number ::= INT\n");
@@ -66,38 +66,44 @@ number:
 
 f_expr:
     LPAREN FUNC s_expr RPAREN {
-        fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC expr RPAREN\n");
+        fprintf(stderr, "yacc: f_expr ::= LPAREN FUNC expr RPAREN\n");
         $$ = createFunctionNode($2, $3, NULL);
     }
     | LPAREN FUNC s_expr s_expr RPAREN {
-        fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC expr expr RPAREN\n");
+        fprintf(stderr, "yacc: f_expr ::= LPAREN FUNC expr expr RPAREN\n");
         $$ = createFunctionNode($2, $3, $4);
     };
 
-    let_elem:
+let_elem:
     LPAREN SYMBOL s_expr RPAREN {
-    printf(stderr, "yacc: s_expr ::= LPAREN SYMBOL s_expr RPAREN\n");
-    $$ = createSymbolTableNode($2, $3);
+    	fprintf(stderr, "yacc: let_elem ::= LPAREN SYMBOL s_expr RPAREN\n");
+    	$$ = createSymbolTableNode($2, $3);
     };
 
-    let_list:
-        LET let_elem {
+let_list:
+    LET let_elem {
+    	fprintf(stderr, "yacc: let_list ::= LET let_elem\n");
         $$ = $2;
     }
-    |
-     let_list  let_elem  {
-     $$ = addToSymbolTable($1, $2);
-     };
+    | let_list  let_elem  {
+    	fprintf(stderr, "yacc: let_list ::= let_list  let_elem\n");
+    	$$ = addToSymbolTable($1, $2);
+    };
 
-     let_section:
-     LPAREN let_list RPAREN {
-     $$ = $2;
-     };
+let_section:
+    /* <empty> */ {
+    	fprintf(stderr, "yacc: let_section ::= <empty>\n");
+    	$$ = NULL;
+    }
+    | LPAREN let_list RPAREN {
+    	fprintf(stderr, "yacc: let_section ::= LPAREN let_list RPAREN\n");
+    	$$ = $2;
+    };
 
-     symbol:
+symbol:
      SYMBOL {
-     fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
-     $$ = createSymbolNode($1);
+     	fprintf(stderr, "yacc: symbol ::= SYMBOL\n");
+     	$$ = createSymbolNode($1);
      };
 
 %%
