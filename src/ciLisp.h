@@ -117,7 +117,7 @@ void freeNode(AST_NODE *node);
 RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode);
-AST_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr);
+SYMBOL_TABLE_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr);
 void printRetVal(RET_VAL val);
 AST_NODE *createSymbolNode (char* ident);
 AST_NODE *linkSymbolNode (SYMBOL_TABLE_NODE* symbTable, AST_NODE *s_expr);
