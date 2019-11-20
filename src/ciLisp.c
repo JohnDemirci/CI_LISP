@@ -116,8 +116,8 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)
     // For functions other than CUSTOM_OPER, you should free the funcName after you're assigned the OPER_TYPE.
 
     // funcName = (char*)malloc((strlen(funcName)+1)* sizeof(char));
-   /* node->data.function.op1 = ()malloc(sizeof(char *));
-    node->data.function.op2 = malloc(sizeof(char *));*/
+    /* node->data.function.op1 = ()malloc(sizeof(char *));
+     node->data.function.op2 = malloc(sizeof(char *));*/
 
     node->type = FUNC_NODE_TYPE;
     // funcname will be a func
@@ -207,7 +207,7 @@ RET_VAL eval(AST_NODE *node)
             result = evalFuncNode(&node->data.function);
             break;
         case SYMBOL_NODE_TYPE:
-            result = evalSyymbolNode(&node->data.symbol);
+            result = evalSyymbolNode(node);
         default:
             yyerror("Invalid AST_NODE_TYPE, probably invalid writes somewhere!");
     }
@@ -216,13 +216,22 @@ RET_VAL eval(AST_NODE *node)
 }
 
 
-RET_VAL evalSyymbolNode (SYMBOL_AST_NODE *symbol) {
+RET_VAL evalSyymbolNode (AST_NODE *node) {
+    /*if (node == NULL) {
+        return NULL;
+    }*/
 
+    if (!node) {
+        return   (RET_VAL){INT_TYPE, NAN};
+    }
+
+    SYMBOL_TABLE_NODE *john = findSymbol(node->data.symbol.ident, node);
+    return eval(john->val);
 }
 
-SYMBOL_TABLE_NODE *findSymbol (char* ident, AST_NODE s_expr) {
+SYMBOL_TABLE_NODE *findSymbol (char* ident, AST_NODE *s_expr) {
     SYMBOL_TABLE_NODE *node;
-    node = s_expr.symbolTable;
+    node = s_expr->symbolTable;
     while (node != NULL) {
         if (strcmp(ident, node->ident) == 0) {
             return  node;
@@ -231,7 +240,7 @@ SYMBOL_TABLE_NODE *findSymbol (char* ident, AST_NODE s_expr) {
     }
     SYMBOL_TABLE_NODE *item;
 
-    item = findSymbol(ident, *(s_expr.parent));
+    item = findSymbol(ident, s_expr->parent);
     return item;
 }
 
@@ -487,23 +496,24 @@ void printRetVal(RET_VAL val)
 AST_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr) {
     AST_NODE *node;
     size_t nodeSize;
+    size_t length = strlen(ident);
     // allocate space for the fixed sie and the variable part (union)
     nodeSize = sizeof(AST_NODE);
 
     if ((node = calloc(nodeSize, 1)) == NULL)
         yyerror("Memory allocation failed!");
     node->type =SYMBOL_NODE_TYPE;
-    node->symbolTable->ident = (char *) malloc(sizeof(char*));
+    node->symbolTable->ident = (char *) malloc (sizeof(char*)+1);
     strcpy(node->symbolTable->ident, ident);
     node->symbolTable->val = s_expr->symbolTable->val;
     node->symbolTable->next = NULL;
     return node;
 
- /*   s_expr->symbolTable->ident = (char *)malloc(sizeof(char*));
-    s_expr->type = SYMBOL_NODE_TYPE;
-    strcpy(s_expr->symbolTable->ident, ident);
-    s_expr->symbolTable->next = NULL;
-    return s_expr;*/
+    /*   s_expr->symbolTable->ident = (char *)malloc(sizeof(char*));
+       s_expr->type = SYMBOL_NODE_TYPE;
+       strcpy(s_expr->symbolTable->ident, ident);
+       s_expr->symbolTable->next = NULL;
+       return s_expr;*/
 }
 
 
