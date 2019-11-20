@@ -132,6 +132,13 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)
             node->data.function.oper = position;
             node->data.function.op1 = op1;
             node->data.function.op2 = op2;
+
+            if (node->data.function.op1 != NULL ) {
+                node->data.function.op1->parent = node;
+            }
+            if (node->data.function.op2 != NULL) {
+                node->data.function.op2->parent = node;
+            }
             free(funcName);
             eval(node);
             // evalFuncNode(&node->data.function);
@@ -200,7 +207,7 @@ RET_VAL eval(AST_NODE *node)
             result = evalFuncNode(&node->data.function);
             break;
         case SYMBOL_NODE_TYPE:
-            // RESULT = evalSyymbolNode
+            result = evalSyymbolNode(&node->data.symbol);
         default:
             yyerror("Invalid AST_NODE_TYPE, probably invalid writes somewhere!");
     }
@@ -209,8 +216,24 @@ RET_VAL eval(AST_NODE *node)
 }
 
 
+RET_VAL evalSyymbolNode (SYMBOL_AST_NODE *symbol) {
+    
+}
 
+SYMBOL_TABLE_NODE *findSymbol (char* ident, AST_NODE s_expr) {
+    SYMBOL_TABLE_NODE *node;
+    node = s_expr.symbolTable;
+    while (node != NULL) {
+        if (strcmp(ident, node->ident) == 0) {
+            return  node;
+        }
+        node = node->next;
+    }
+    SYMBOL_TABLE_NODE *item;
 
+    item = findSymbol(ident, *(s_expr.parent));
+    return item;
+}
 
 
 RET_VAL negHelper(double op1, RET_VAL result) {
@@ -481,9 +504,6 @@ AST_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr) {
     strcpy(s_expr->symbolTable->ident, ident);
     s_expr->symbolTable->next = NULL;
     return s_expr;*/
-
-
-
 }
 
 
