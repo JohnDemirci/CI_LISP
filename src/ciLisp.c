@@ -56,7 +56,7 @@ AST_NODE *makeNewNode(AST_NODE_TYPE type) {
     AST_NODE *node = calloc(1, sizeof(AST_NODE));
     if (node == NULL) {
         yyerror("Memory allocation failed!");
-        exit(42069);
+        exit(7);
     }
     node->type = type;
     return node;
@@ -460,7 +460,7 @@ SYMBOL_TABLE_NODE * makeNewSymbol()
     SYMBOL_TABLE_NODE * node = calloc(1, sizeof(SYMBOL_TABLE_NODE));
     if (node == NULL) {
         yyerror("Memory allocation failed!");
-        exit(420420);
+        exit(1);
     }
     return node;
 }
