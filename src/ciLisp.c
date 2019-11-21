@@ -189,117 +189,125 @@ SYMBOL_TABLE_NODE *findSymbol(char *ident, AST_NODE *s_expr) {
 }
 
 
-RET_VAL negHelper(double op1, RET_VAL result) {
-    result.value = -1 * op1;
+RET_VAL negHelper(RET_VAL op1, RET_VAL result) {
+    result.value = -1 * op1.value;
+    result.type = op1.type;
     return result;
 }
 
 
-RET_VAL absHelper(double op1, RET_VAL result) {
-    result.value = fabs(op1);
+RET_VAL absHelper(RET_VAL op1, RET_VAL result) {
+    result.value = fabs(op1.value);
+    result.type = op1.type;
     return result;
 }
 
-RET_VAL expHelper(double op1, RET_VAL result) {
+RET_VAL expHelper(RET_VAL op1, RET_VAL result) {
     if (result.type == INT_TYPE) {
-        result.value = round(exp(op1));
+        result.value = round(exp(op1.value));
         return result;
     }
-    result.value = exp(op1);
+    result.value = exp(op1.value);
     return result;
 }
 
-RET_VAL sqrtHelper(double op1, RET_VAL result) {
+RET_VAL sqrtHelper(RET_VAL op1, RET_VAL result) {
     if (result.type == INT_TYPE) {
-        result.value = round(sqrt(op1));
+        result.value = round(sqrt(op1.value));
         return result;
     }
-    result.value = sqrt(op1);
+    result.value = sqrt(op1.value);
     return result;
 }
 
-RET_VAL addHelper(double op1, double op2, RET_VAL result) {
-    result.value = op1 + op2;
+RET_VAL addHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result.value = op1.value + op2.value;
+    if (op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE) {
+        result.type = DOUBLE_TYPE;
+    }
     return result;
 }
 
-RET_VAL subHelper(double op1, double op2, RET_VAL result) {
-    result.value = op1 - op2;
+RET_VAL subHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result.value = op1.value - op2.value;
+    if (op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE) {
+        result.type = DOUBLE_TYPE;
+    }
     return result;
 }
 
-RET_VAL multHelper(double op1, double op2, RET_VAL result) {
-    result.value = op1 * op2;
+RET_VAL multHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result.value = op1.value * op2.value;
     return result;
 }
 
-RET_VAL remainderHelper(double op1, double op2, RET_VAL result) {
+RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
     if (result.type == INT_TYPE) {
-        result.value = round(remainder(op1, op2));
+        result.value = round(remainder(op1.value, op2.value));
         return result;
     }
-    result.value = remainder(op1, op2);
+    result.value = remainder(op1.value, op2.value);
     return result;
 }
 
-RET_VAL divHelper(double op1, double op2, RET_VAL result) {
+RET_VAL divHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
 
     if (result.type == INT_TYPE) {
-        result.value = round(op1 / op2);
+        result.value = round(op1.value / op2.value);
         return result;
     }
-    result.value = op1 / op2;
+    result.value = op1.value / op2.value;
     return result;
 }
 
-RET_VAL logHelper(double op1, RET_VAL result) {
+RET_VAL logHelper(RET_VAL op1, RET_VAL result) {
     if (result.type == INT_TYPE) {
-        result.value = round(log(op1));
+        result.value = round(log(op1.value));
         return result;
     }
-    result.value = log(op1);
+    result.value = log(op1.value);
     return result;
 }
 
-RET_VAL powerHelper(double op1, double op2, RET_VAL result) {
-    result.value = pow(op1, op2);
+RET_VAL powerHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result.value = pow(op1.value, op2.value);
     return result;
 }
 
-RET_VAL maxHelper(double op1, double op2, RET_VAL result) {
-    result.value = fmax(op1, op2);
+RET_VAL maxHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result.value = fmax(op1.value, op2.value);
     return result;
 }
 
-RET_VAL minHelper(double op1, double op2, RET_VAL result) {
-    result.value = fmin(op1, op2);
+RET_VAL minHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result.value = fmin(op1.value, op2.value);
     return result;
 }
 
-RET_VAL exp2Helper(double op1, RET_VAL result) {
+RET_VAL exp2Helper(RET_VAL op1, RET_VAL result) {
     if (result.type == INT_TYPE) {
-        result.value = round(exp(op1));
+        result.value = round(exp(op1.value));
         return result;
     }
-    result.value = exp(op1);
+    result.value = exp(op1.value);
     return result;
 }
 
-RET_VAL cbrtHelper(double op1, RET_VAL result) {
+RET_VAL cbrtHelper(RET_VAL op1, RET_VAL result) {
     if (result.type == INT_TYPE) {
-        result.value = round(cbrt(op1));
+        result.value = round(cbrt(op1.value));
         return result;
     }
-    result.value = exp(op1);
+    result.value = exp(op1.value);
     return result;
 }
 
-RET_VAL hypotHelper(double op1, double op2, RET_VAL result) {
+RET_VAL hypotHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
     if (result.type == INT_TYPE) {
-        result.value = round(hypot(op1, op2));
+        result.value = round(hypot(op1.value, op2.value));
         return result;
     }
-    result.value = hypot(op1, op2);
+    result.value = hypot(op1.value, op2.value);
     return result;
 }
 
@@ -317,6 +325,12 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
     return result;
 }
 
+RET_VAL valuate () {
+
+}
+
+
+
 
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
     RET_VAL result = DEFAULT_RET_VAL;
@@ -330,60 +344,63 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
     if (funcNode->op2 != NULL) {
         op2rv = eval(funcNode->op2);
     }
-    double op1 = op1rv.value;
+    /*double op1 = op1rv.value;
     double op2 = op2rv.value;
-    result.type = funcNode->op1->data.number.type;
+     // result.type = funcNode->op1->data.number.type;
+     result = eval(funcNode->op1);*/
+
+    // result.type = (int)resolveFunc(funcNode->ident);
 
     switch (funcNode->oper) {
         case NEG_OPER:
             // do something
-            result = negHelper(op1, result);
+            result = negHelper(op1rv, result);
             break;
         case ABS_OPER:
-            result = absHelper(op1, result);
+            result = absHelper(op1rv, result);
             break;
         case EXP_OPER:
-            result = expHelper(op1, result);
+            result = expHelper(op1rv, result);
             // result.value = exp(op1);
             break;
         case SQRT_OPER:
-            result = sqrtHelper(op1, result);
+            result = sqrtHelper(op1rv, result);
             break;
         case ADD_OPER:
-            result = addHelper(op1, op2, result);
+            result = addHelper(op1rv, op2rv, result);
             break;
         case SUB_OPER:
-            result = subHelper(op1, op2, result);
+            result = subHelper(op1rv, op2rv, result);
             break;
         case MULT_OPER:
-            result = multHelper(op1, op2, result);
+            result = multHelper(op1rv, op2rv, result);
             break;
         case DIV_OPER:
-            result = divHelper(op1, op2, result);
+            result = divHelper(op1rv, op2rv, result);
             break;
         case REMAINDER_OPER:
-            result = remainderHelper(op1, op2, result);
+            result = remainderHelper(op1rv, op2rv, result);
             break;
         case LOG_OPER:
-            result = logHelper(op1, result);
+            result = logHelper(op1rv, result);
             break;
         case POW_OPER:
-            result = powerHelper(op1, op2, result);
+            result = powerHelper(op1rv, op2rv, result);
             break;
         case MAX_OPER:
-            result = maxHelper(op1, op2, result);
+            result = maxHelper(op1rv, op2rv, result);
             break;
         case MIN_OPER:
-            result = minHelper(op1, op2, result);
+            result = minHelper(op1rv, op2rv, result);
             break;
         case EXP2_OPER:
-            result = exp2Helper(op1, result);
+            result = exp2Helper(op1rv, result);
             break;
         case CBRT_OPER:
-            result = cbrtHelper(op1, result);
+            result = cbrtHelper(op1rv, result);
             break;
         case HYPOT_OPER:
-            result = hypotHelper(op1, op2, result);
+            result = hypotHelper(op1rv, op2rv, result);
             break;
         case READ_OPER:
             break;
@@ -416,15 +433,13 @@ void printRetVal(RET_VAL val) {
             break;
         case INT_TYPE:
             printf("\ntype: Int");
-            int v = (int)val.value;
-            int n = NAN;
-            if (v == n)
-                printf("\nvalue: NAN");
-            else
-                printf("\nvalue: %d", (int) val.value);
+            // int v = (int)val.value;
+
+            printf("\nvalue: %d", (int) val.value);
             // do something
             break;
     }
+    // printf("%lf", val.value);
 }
 
 // createSymbolNode
