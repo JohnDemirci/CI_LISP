@@ -3,6 +3,8 @@
 
 #define DEFAULT_RET_VAL ((RET_VAL){INT_TYPE, NAN})
 
+// john
+
 void yyerror(char *s) {
     fprintf(stderr, "\nERROR: %s\n", s);
     // note stderr that normally defaults to stdout, but can be redirected: ./src 2> src.log
@@ -355,7 +357,6 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
 }
 
 RET_VAL valuate () {
-
 }
 
 
