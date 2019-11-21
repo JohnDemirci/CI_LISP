@@ -189,6 +189,28 @@ SYMBOL_TABLE_NODE *findSymbol(char *ident, AST_NODE *s_expr) {
 }
 
 
+RET_VAL checker (RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    if (op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE) {
+        result.type = DOUBLE_TYPE;
+        return result;
+    } else {
+        result.type = INT_TYPE;
+        return result;
+    }
+}
+
+RET_VAL checkerWithOneOperan (RET_VAL op1, RET_VAL result) {
+    if (op1.type == DOUBLE_TYPE ) {
+        result.type = DOUBLE_TYPE;
+        return result;
+    } else {
+        result.type = INT_TYPE;
+        return result;
+    }
+}
+
+
+
 RET_VAL negHelper(RET_VAL op1, RET_VAL result) {
     result.value = -1 * op1.value;
     result.type = op1.type;
@@ -230,18 +252,18 @@ RET_VAL addHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
 
 RET_VAL subHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
     result.value = op1.value - op2.value;
-    if (op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE) {
-        result.type = DOUBLE_TYPE;
-    }
+    result = checker(op1,op2,result);
     return result;
 }
 
 RET_VAL multHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
     result.value = op1.value * op2.value;
+    result = checker(op1,op2,result);
     return result;
 }
 
 RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result = checker(op1,op2,result);
     if (result.type == INT_TYPE) {
         result.value = round(remainder(op1.value, op2.value));
         return result;
@@ -251,7 +273,7 @@ RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
 }
 
 RET_VAL divHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
-
+    result = checker(op1,op2,result);
     if (result.type == INT_TYPE) {
         result.value = round(op1.value / op2.value);
         return result;
@@ -261,6 +283,7 @@ RET_VAL divHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
 }
 
 RET_VAL logHelper(RET_VAL op1, RET_VAL result) {
+    result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(log(op1.value));
         return result;
@@ -270,21 +293,25 @@ RET_VAL logHelper(RET_VAL op1, RET_VAL result) {
 }
 
 RET_VAL powerHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result = checker(op1,op2,result);
     result.value = pow(op1.value, op2.value);
     return result;
 }
 
 RET_VAL maxHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result = checker(op1,op2,result);
     result.value = fmax(op1.value, op2.value);
     return result;
 }
 
 RET_VAL minHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result = checker(op1,op2,result);
     result.value = fmin(op1.value, op2.value);
     return result;
 }
 
 RET_VAL exp2Helper(RET_VAL op1, RET_VAL result) {
+    result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(exp(op1.value));
         return result;
@@ -294,6 +321,7 @@ RET_VAL exp2Helper(RET_VAL op1, RET_VAL result) {
 }
 
 RET_VAL cbrtHelper(RET_VAL op1, RET_VAL result) {
+    result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(cbrt(op1.value));
         return result;
@@ -303,6 +331,7 @@ RET_VAL cbrtHelper(RET_VAL op1, RET_VAL result) {
 }
 
 RET_VAL hypotHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+    result = checker(op1,op2,result);
     if (result.type == INT_TYPE) {
         result.value = round(hypot(op1.value, op2.value));
         return result;
