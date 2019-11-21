@@ -3,7 +3,9 @@
 
 #define DEFAULT_RET_VAL ((RET_VAL){INT_TYPE, NAN})
 
-// john
+// Umit Demirci
+// CS232
+// Project: CILisp
 
 void yyerror(char *s) {
     fprintf(stderr, "\nERROR: %s\n", s);
@@ -139,12 +141,9 @@ RET_VAL eval(AST_NODE *node) {
     // Use the results of those calls to populate result.
     switch (node->type) {
         case NUM_NODE_TYPE:
-            // do something
             result = evalNumNode(&node->data.number);
-
             break;
         case FUNC_NODE_TYPE:
-            // do something
             result = evalFuncNode(&node->data.function);
             break;
         case SYMBOL_NODE_TYPE:
@@ -210,8 +209,6 @@ RET_VAL checkerWithOneOperan (RET_VAL op1, RET_VAL result) {
         return result;
     }
 }
-
-
 
 RET_VAL negHelper(RET_VAL op1, RET_VAL result) {
     result.value = -1 * op1.value;
@@ -356,9 +353,6 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
     return result;
 }
 
-RET_VAL valuate () {
-}
-
 
 
 
@@ -374,12 +368,6 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
     if (funcNode->op2 != NULL) {
         op2rv = eval(funcNode->op2);
     }
-    /*double op1 = op1rv.value;
-    double op2 = op2rv.value;
-     // result.type = funcNode->op1->data.number.type;
-     result = eval(funcNode->op1);*/
-
-    // result.type = (int)resolveFunc(funcNode->ident);
 
     switch (funcNode->oper) {
         case NEG_OPER:
@@ -391,7 +379,6 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
             break;
         case EXP_OPER:
             result = expHelper(op1rv, result);
-            // result.value = exp(op1);
             break;
         case SQRT_OPER:
             result = sqrtHelper(op1rv, result);
@@ -463,17 +450,10 @@ void printRetVal(RET_VAL val) {
             break;
         case INT_TYPE:
             printf("\ntype: Int");
-            // int v = (int)val.value;
-
             printf("\nvalue: %d", (int) val.value);
-            // do something
             break;
     }
-    // printf("%lf", val.value);
 }
-
-// createSymbolNode
-
 
 SYMBOL_TABLE_NODE * makeNewSymbol()
 {
