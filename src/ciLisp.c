@@ -77,8 +77,10 @@ AST_NODE *createSymbolNode(char *ident) {
 
 
 AST_NODE *createNumberNode(double value, NUM_TYPE type) {
-    // TODO set the AST_NODE's type, assign values to contained NUM_AST_NODE
     AST_NODE *node = makeNewNode(NUM_NODE_TYPE);
+
+
+
     node->data.number.type = type;
     node->data.number.value = value;
     return node;
@@ -136,7 +138,6 @@ RET_VAL eval(AST_NODE *node) {
 
     RET_VAL result = {INT_TYPE, NAN}; // see NUM_AST_NODE, because RET_VAL is just an alternative name for it.
 
-    // TODO complete the switch.
     // Make calls to other eval functions based on node type.
     // Use the results of those calls to populate result.
     switch (node->type) {
@@ -346,7 +347,6 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
     if (!numNode)
         return (RET_VAL) {INT_TYPE, NAN};
     RET_VAL result = {INT_TYPE, NAN};
-    // TODO populate result with the values stored in the node.
     // SEE: AST_NODE, AST_NODE_TYPE, NUM_AST_NODE
     result.value = numNode->value;
     result.type = numNode->type;
@@ -424,6 +424,7 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
         case RAND_OPER:
             break;
         case PRINT_OPER:
+
             break;
         case EQUAL_OPER:
             break;

@@ -58,7 +58,7 @@ s_expr:
 number:
     INT_LITTERAL {
      fprintf(stderr, "yacc: number ::= INT\n");
-        $$ = createNumberNode($1, INT_TYPE);
+        $$ = createNumberNode($1, NO_TYPE);
     }
     | INT INT_LITTERAL {
         fprintf(stderr, "yacc: number ::= INT_LITTERAL\n");
@@ -70,7 +70,7 @@ number:
     }
     | DOUBLE_LITTERAL {
         fprintf(stderr, "yacc: number ::= DOUBLE\n");
-        $$ = createNumberNode($1, DOUBLE_TYPE);
+        $$ = createNumberNode($1, NO_TYPE);
     }
     | INT DOUBLE_LITTERAL {
         fprintf(stderr, "yacc: number ::= DOUBLE\n");
