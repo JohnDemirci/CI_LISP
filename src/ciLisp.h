@@ -58,10 +58,8 @@ typedef enum {
 } AST_NODE_TYPE;
 
 // Types of numeric values
-typedef enum {
-    INT_TYPE,
-    DOUBLE_TYPE
-} NUM_TYPE;
+typedef enum { NO_TYPE, INT_TYPE, DOUBLE_TYPE } NUM_TYPE;
+
 
 // Node to store a number.
 typedef struct {
@@ -87,6 +85,7 @@ typedef struct symbol_ast_node {
 } SYMBOL_AST_NODE;
 
 typedef struct symbol_table_node {
+    NUM_TYPE val_type;
     char *ident;
     struct ast_node *val;
     struct symbol_table_node *next;

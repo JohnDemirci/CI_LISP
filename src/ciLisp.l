@@ -15,6 +15,16 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
 
 %%
 
+"double" {
+    fprintf(stderr, "lex: DOUBLE\n");
+    return DOUBLE;
+    }
+
+"int" {
+    fprintf(stderr, "lex: INT\n");
+    return INT;
+    }
+
 "quit" {
     return QUIT;
     }
@@ -36,27 +46,27 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
 
 {int} {
     yylval.dval = strtod(yytext, NULL);
-    fprintf(stderr, "lex: INT dval = %lf\n", yylval.dval);
-    return INT;
+    fprintf(stderr, "lex: INT_LITTERAL (%lf)\n", yylval.dval);
+    return INT_LITTERAL;
     }
 
 {double} {
     yylval.dval = strtod(yytext, NULL);
-    fprintf(stderr, "lex: DOUBLE dval = %lf\n", yylval.dval);
-    return DOUBLE;
+    fprintf(stderr, "lex: DOUBLE_LITTERAL (%lf)\n", yylval.dval);
+    return DOUBLE_LITTERAL;
     }
 
 {func} {
     yylval.sval = (char *) malloc(strlen(yytext)*sizeof(char)+1);
     strcpy(yylval.sval, yytext);
-    fprintf(stderr, "lex: FUNC sval = %s\n", yylval.sval);
+    fprintf(stderr, "lex: FUNC (%s)\n", yylval.sval);
     return FUNC;
     }
 
 {symbol} {
     yylval.sval = (char *) malloc(strlen(yytext)*sizeof(char)+1);
     strcpy(yylval.sval, yytext);
-    fprintf(stderr, "lex: SYMBOL sval = %s\n", yylval.sval);
+    fprintf(stderr, "lex: SYMBOL (%s)\n", yylval.sval);
     return SYMBOL;
     }
 
@@ -65,7 +75,6 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
     YY_FLUSH_BUFFER;
     return EOL;
     }
-
 
 
 [ |\t] ; /* skip whitespace */

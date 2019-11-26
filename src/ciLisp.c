@@ -452,6 +452,10 @@ void printRetVal(RET_VAL val) {
             printf("\ntype: Int");
             printf("\nvalue: %d", (int) val.value);
             break;
+        case NO_TYPE:
+            printf("\ntype: Int");
+            printf("\nvalue: %d", (int) val.value);
+            break;
     }
 }
 
