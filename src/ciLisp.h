@@ -109,7 +109,7 @@ typedef struct ast_node {
 AST_NODE *createNumberNode(double value, NUM_TYPE type);
 AST_NODE *createSymbolNode (char* ident);
 AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2);
-SYMBOL_TABLE_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr);
+SYMBOL_TABLE_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr, NUM_TYPE type);
 
 RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);

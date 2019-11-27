@@ -163,11 +163,28 @@ RET_VAL evalSymbolNode(AST_NODE *node)
     if (!node) {
         return DEFAULT_RET_VAL;
     }
+
     SYMBOL_TABLE_NODE *john = findSymbol(node->data.symbol.ident, node);
     if (!john) {
         yyerror("Unexpected Identifier");
         return DEFAULT_RET_VAL;
     }
+
+
+    switch (john->val_type) {
+        case INT_TYPE:
+            // type declared as int
+            if (john->val->data.number.type == DOUBLE_TYPE) {
+                printf("\nWARNING: precision loss in the assignment for variable \n");
+                john->val->data.number.value = floor(john->val->data.number.value);
+                john->val->data.number.type = INT_TYPE;
+            }
+            break;
+        default:
+            yyerror("error");
+    }
+
+
     return eval(john->val);
 }
 
@@ -471,10 +488,11 @@ SYMBOL_TABLE_NODE * makeNewSymbol()
 }
 
 
-SYMBOL_TABLE_NODE *createSymbolTableNode(char *ident, AST_NODE *s_expr) {
+SYMBOL_TABLE_NODE *createSymbolTableNode(char *ident, AST_NODE *s_expr, NUM_TYPE type) {
     SYMBOL_TABLE_NODE *node = makeNewSymbol();
     node->ident = ident;
     node->val = s_expr;
+    node->val_type = type;
     return node;
 }
 

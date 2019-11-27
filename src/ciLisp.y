@@ -94,15 +94,15 @@ f_expr:
 let_elem:
     LPAREN SYMBOL s_expr RPAREN {
     	fprintf(stderr, "yacc: let_elem ::= LPAREN SYMBOL s_expr RPAREN\n");
-    	$$ = createSymbolTableNode($2, $3);
+    	$$ = createSymbolTableNode($2, $3, NO_TYPE);
     }
     | LPAREN INT SYMBOL s_expr RPAREN {
         fprintf(stderr, "yacc: let_elem ::= LPAREN INT SYMBOL s_expr RPAREN\n");
-        $$ = createSymbolTableNode($3, $4);
+        $$ = createSymbolTableNode($3, $4, INT_TYPE);
      }
     | LPAREN DOUBLE SYMBOL s_expr RPAREN {
         fprintf(stderr, "yacc: let_elem ::= LPAREN DOUBLE SYMBOL s_expr RPAREN\n");
-        $$ = createSymbolTableNode($3, $4);
+        $$ = createSymbolTableNode($3, $4, DOUBLE_TYPE);
     };
 
 let_list:
