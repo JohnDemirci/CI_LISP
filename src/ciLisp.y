@@ -10,7 +10,7 @@
 }
 
 %token <sval> FUNC SYMBOL
-%token <dval> INT_LITTERAL DOUBLE_LITTERAL
+%token <dval> INT_LITERAL DOUBLE_LITERAL
 %token LPAREN RPAREN EOL QUIT LET INT DOUBLE
 
 %type <astNode> s_expr f_expr number symbol
@@ -56,28 +56,28 @@ s_expr:
     };
 
 number:
-    INT_LITTERAL {
-     fprintf(stderr, "yacc: number ::= INT\n");
-        $$ = createNumberNode($1, NO_TYPE);
+    INT_LITERAL {
+     fprintf(stderr, "yacc: number ::= INT_LITERAL\n");
+        $$ = createNumberNode($1, INT_TYPE);
     }
-    | INT INT_LITTERAL {
-        fprintf(stderr, "yacc: number ::= INT_LITTERAL\n");
+    | INT INT_LITERAL {
+        fprintf(stderr, "yacc: number ::= INT INT_LITERAL\n");
         $$ = createNumberNode($2, INT_TYPE);
     }
-    | DOUBLE INT_LITTERAL {
-        fprintf(stderr, "yacc: number ::= INT_LITTERAL\n");
-        $$ = createNumberNode($2, INT_TYPE);
-    }
-    | DOUBLE_LITTERAL {
-        fprintf(stderr, "yacc: number ::= DOUBLE\n");
-        $$ = createNumberNode($1, NO_TYPE);
-    }
-    | INT DOUBLE_LITTERAL {
-        fprintf(stderr, "yacc: number ::= DOUBLE\n");
+    | DOUBLE INT_LITERAL {
+        fprintf(stderr, "yacc: number ::= DOUBLE INT_LITERAL\n");
         $$ = createNumberNode($2, DOUBLE_TYPE);
     }
-    | DOUBLE DOUBLE_LITTERAL {
-         fprintf(stderr, "yacc: number ::= DOUBLE\n");
+    | DOUBLE_LITERAL {
+        fprintf(stderr, "yacc: number ::= DOUBLE_LITERAL\n");
+        $$ = createNumberNode($1, DOUBLE_TYPE);
+    }
+    | INT DOUBLE_LITERAL {
+        fprintf(stderr, "yacc: number ::= INT DOUBLE_LITERAL\n");
+        $$ = createNumberNode($2, INT_TYPE);
+    }
+    | DOUBLE DOUBLE_LITERAL {
+         fprintf(stderr, "yacc: number ::= DOUBLE DOUBLE_LITERAL\n");
          $$ = createNumberNode($2, DOUBLE_TYPE);
      };
 
@@ -97,11 +97,11 @@ let_elem:
     	$$ = createSymbolTableNode($2, $3);
     }
     | LPAREN INT SYMBOL s_expr RPAREN {
-        fprintf(stderr, "yacc: let_elem ::= LPAREN SYMBOL s_expr RPAREN\n");
+        fprintf(stderr, "yacc: let_elem ::= LPAREN INT SYMBOL s_expr RPAREN\n");
         $$ = createSymbolTableNode($3, $4);
      }
     | LPAREN DOUBLE SYMBOL s_expr RPAREN {
-        fprintf(stderr, "yacc: let_elem ::= LPAREN SYMBOL s_expr RPAREN\n");
+        fprintf(stderr, "yacc: let_elem ::= LPAREN DOUBLE SYMBOL s_expr RPAREN\n");
         $$ = createSymbolTableNode($3, $4);
     };
 
