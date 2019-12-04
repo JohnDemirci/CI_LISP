@@ -496,6 +496,13 @@ SYMBOL_TABLE_NODE *createSymbolTableNode(char *ident, AST_NODE *s_expr, NUM_TYPE
     return node;
 }
 
+AST_NODE *addSexprToList (AST_NODE *item, AST_NODE *list) {
+    if (item != NULL) {
+        item->next = list;
+    }
+    return item;
+}
+
 
 SYMBOL_TABLE_NODE *addToSymbolTable(SYMBOL_TABLE_NODE *list, SYMBOL_TABLE_NODE *item) {
     if (item == NULL) {

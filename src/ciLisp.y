@@ -82,14 +82,18 @@ number:
      };
 
 f_expr:
-    LPAREN FUNC s_expr RPAREN {
-        fprintf(stderr, "yacc: f_expr ::= LPAREN FUNC expr RPAREN\n");
-        $$ = createFunctionNode($2, $3, NULL);
-    }
-    | LPAREN FUNC s_expr s_expr RPAREN {
-        fprintf(stderr, "yacc: f_expr ::= LPAREN FUNC expr expr RPAREN\n");
-        $$ = createFunctionNode($2, $3, $4);
+    LPAREN FUNC s_expr_list LPAREN {
+        fprintf(stderr, "yacc: number ::= LPAREN FUNC s_expr_list LPAREN \n");
+            createFunctionNode
     };
+
+s_expr_list:
+    s_expr s_expr_list {
+        $$ = addSexprToList($1,$2);
+    }
+    | s_expr {
+        $$ = $1;
+    }
 
 let_elem:
     LPAREN SYMBOL s_expr RPAREN {
