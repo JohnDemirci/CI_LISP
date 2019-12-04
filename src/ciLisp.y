@@ -81,19 +81,20 @@ number:
          $$ = createNumberNode($2, DOUBLE_TYPE);
      };
 
+s_expr_list:
+	s_expr {
+                $$ = $1;
+            }
+	    | s_expr s_expr_list {
+		$$ = addSexprToList($1,$2);
+	    };
+	    
 f_expr:
     LPAREN FUNC s_expr_list LPAREN {
         fprintf(stderr, "yacc: number ::= LPAREN FUNC s_expr_list LPAREN \n");
-            createFunctionNode
+            createFunctionNode($2, $3);
     };
 
-s_expr_list:
-    s_expr s_expr_list {
-        $$ = addSexprToList($1,$2);
-    }
-    | s_expr {
-        $$ = $1;
-    }
 
 let_elem:
     LPAREN SYMBOL s_expr RPAREN {

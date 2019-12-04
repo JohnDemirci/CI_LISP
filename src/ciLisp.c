@@ -93,15 +93,19 @@ AST_NODE *createNumberNode(double value, NUM_TYPE type) {
 //      - An OPER_TYPE (the enum identifying the specific function being called)
 //      - 2 AST_NODEs, the operands
 // SEE: AST_NODE, FUNC_AST_NODE, AST_NODE_TYPE.
-AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2) {
+AST_NODE *createFunctionNode(char *funcName, AST_NODE *op) {
     AST_NODE *node = makeNewNode(FUNC_NODE_TYPE);
+
+
     node->data.function.ident = funcName;
     node->data.function.oper = resolveFunc(funcName);
-    node->data.function.op1 = op1;
-    node->data.function.op1->parent = node;
-    if (op2 != NULL) {
-        node->data.function.op2 = op2;
-        node->data.function.op2->parent = node;
+    node->data.function.opList = op;
+
+    AST_NODE *temp;
+    temp = op;
+    while (temp != NULL) {
+        node->parent = node;
+        temp = temp->next;
     }
     return node;
 }
@@ -116,8 +120,8 @@ void freeNode(AST_NODE *node) {
 
     if (node->type == FUNC_NODE_TYPE) {
         // Recursive calls to free child nodes
-        freeNode(node->data.function.op1);
-        freeNode(node->data.function.op2);
+        freeNode(node->data.function.opList);
+        freeNode(node->data.function.opList->next);
 
         // Free up identifier string if necessary
         if (node->data.function.oper == CUSTOM_OPER) {
@@ -380,10 +384,13 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
     }
     // TODO populate result with the result of running the function on its operands.
     // SEE: AST_NODE, AST_NODE_TYPE, FUNC_AST_NODE
-    RET_VAL op1rv = eval(funcNode->op1);
+
+
+
+    RET_VAL op1rv = eval(funcNode->opList);
     RET_VAL op2rv = DEFAULT_RET_VAL;
-    if (funcNode->op2 != NULL) {
-        op2rv = eval(funcNode->op2);
+    if (funcNode->opList->next != NULL) {
+        op2rv = eval(funcNode->opList->next);
     }
 
     switch (funcNode->oper) {
