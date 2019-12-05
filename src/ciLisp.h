@@ -111,13 +111,15 @@ AST_NODE *createSymbolNode (char* ident);
 AST_NODE *createFunctionNode(char *funcName, AST_NODE *op);
 SYMBOL_TABLE_NODE *createSymbolTableNode (char* ident, AST_NODE *s_expr, NUM_TYPE type);
 
-RET_VAL eval(AST_NODE *node);
+void evalBinary (FUNC_AST_NODE *func);
+RET_VAL evalUnary (FUNC_AST_NODE *func);
+        RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode);
 RET_VAL evalSymbolNode (AST_NODE *node);
 RET_VAL checker (RET_VAL op1, RET_VAL op2, RET_VAL result);
 RET_VAL checkerWithOneOperan (RET_VAL op1, RET_VAL result);
-RET_VAL printHelper (AST_NODE *op, RET_VAL result);
+RET_VAL printHelper (FUNC_AST_NODE *func, RET_VAL result);
         void printRetVal(RET_VAL val);
 AST_NODE *linkSymbolNode (SYMBOL_TABLE_NODE* symbTable, AST_NODE *s_expr);
 SYMBOL_TABLE_NODE *addToSymbolTable (SYMBOL_TABLE_NODE *list, SYMBOL_TABLE_NODE *item);

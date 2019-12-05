@@ -221,20 +221,27 @@ RET_VAL checkerWithOneOperan (RET_VAL op1, RET_VAL result) {
     }
 }
 
-RET_VAL negHelper(RET_VAL op1, RET_VAL result) {
+RET_VAL negHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
+    RET_VAL result = DEFAULT_RET_VAL;
+    op1 = evalUnary(funcNode);
     result.value = -1 * op1.value;
     result.type = op1.type;
     return result;
 }
 
 
-RET_VAL absHelper(RET_VAL op1, RET_VAL result) {
+RET_VAL absHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
+    RET_VAL result = DEFAULT_RET_VAL;
+    op1 = evalUnary(funcNode);
     result.value = fabs(op1.value);
     result.type = op1.type;
     return result;
 }
 
-RET_VAL expHelper(RET_VAL op1, RET_VAL result) {
+RET_VAL expHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
+    RET_VAL result = DEFAULT_RET_VAL;
+    op1 = evalUnary(funcNode);
+
     if (result.type == INT_TYPE) {
         result.value = round(exp(op1.value));
         return result;
@@ -243,7 +250,10 @@ RET_VAL expHelper(RET_VAL op1, RET_VAL result) {
     return result;
 }
 
-RET_VAL sqrtHelper(RET_VAL op1, RET_VAL result) {
+RET_VAL sqrtHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
+    RET_VAL result = DEFAULT_RET_VAL;
+    op1 = evalUnary(funcNode);
+
     if (result.type == INT_TYPE) {
         result.value = round(sqrt(op1.value));
         return result;
@@ -270,7 +280,11 @@ RET_VAL addHelper(FUNC_AST_NODE *list, RET_VAL result) {
     return result;
 }
 
-RET_VAL subHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+RET_VAL subHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *func) {
+    evalBinary(func);
+    op1 = func->opList->data.number;
+    op2 = func->opList->next->data.number;
+    RET_VAL result = DEFAULT_RET_VAL;
     result.value = op1.value - op2.value;
     result = checker(op1,op2,result);
     return result;
@@ -294,7 +308,11 @@ RET_VAL multHelper (FUNC_AST_NODE *list, RET_VAL result) {
     return result;
 }
 
-RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
+    evalBinary(funcNode);
+    op1 = funcNode->opList->data.number;
+    op2 = funcNode->opList->next->data.number;
+    RET_VAL result = DEFAULT_RET_VAL;
     result = checker(op1,op2,result);
     if (result.type == INT_TYPE) {
         result.value = round(remainder(op1.value, op2.value));
@@ -304,7 +322,12 @@ RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
     return result;
 }
 
-RET_VAL divHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+RET_VAL divHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
+    evalBinary(funcNode);
+    op1 = funcNode->opList->data.number;
+    op2 = funcNode->opList->next->data.number;
+    RET_VAL result = DEFAULT_RET_VAL;
+
     result = checker(op1,op2,result);
     if (result.type == INT_TYPE) {
         result.value = round(op1.value / op2.value);
@@ -314,7 +337,10 @@ RET_VAL divHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
     return result;
 }
 
-RET_VAL logHelper(RET_VAL op1, RET_VAL result) {
+RET_VAL logHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
+    RET_VAL result = DEFAULT_RET_VAL;
+    op1 = evalUnary(funcNode);
+
     result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(log(op1.value));
@@ -324,25 +350,43 @@ RET_VAL logHelper(RET_VAL op1, RET_VAL result) {
     return result;
 }
 
-RET_VAL powerHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+RET_VAL powerHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
+    evalBinary(funcNode);
+    op1 = funcNode->opList->data.number;
+    op2 = funcNode->opList->next->data.number;
+    RET_VAL result = DEFAULT_RET_VAL;
+
     result = checker(op1,op2,result);
     result.value = pow(op1.value, op2.value);
     return result;
 }
 
-RET_VAL maxHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+RET_VAL maxHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
+    evalBinary(funcNode);
+    op1 = funcNode->opList->data.number;
+    op2 = funcNode->opList->next->data.number;
+    RET_VAL result = DEFAULT_RET_VAL;
+
     result = checker(op1,op2,result);
     result.value = fmax(op1.value, op2.value);
     return result;
 }
 
-RET_VAL minHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+RET_VAL minHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
+    evalBinary(funcNode);
+    op1 = funcNode->opList->data.number;
+    op2 = funcNode->opList->next->data.number;
+    RET_VAL result = DEFAULT_RET_VAL;
+
     result = checker(op1,op2,result);
     result.value = fmin(op1.value, op2.value);
     return result;
 }
 
-RET_VAL exp2Helper(RET_VAL op1, RET_VAL result) {
+RET_VAL exp2Helper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
+    RET_VAL result = DEFAULT_RET_VAL;
+    op1 = evalUnary(funcNode);
+
     result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(exp(op1.value));
@@ -352,7 +396,10 @@ RET_VAL exp2Helper(RET_VAL op1, RET_VAL result) {
     return result;
 }
 
-RET_VAL cbrtHelper(RET_VAL op1, RET_VAL result) {
+RET_VAL cbrtHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
+    RET_VAL result = DEFAULT_RET_VAL;
+    op1 = evalUnary(funcNode);
+
     result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(cbrt(op1.value));
@@ -362,7 +409,12 @@ RET_VAL cbrtHelper(RET_VAL op1, RET_VAL result) {
     return result;
 }
 
-RET_VAL hypotHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
+RET_VAL hypotHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
+    evalBinary(funcNode);
+    op1 = funcNode->opList->data.number;
+    op2 = funcNode->opList->next->data.number;
+    RET_VAL result = DEFAULT_RET_VAL;
+
     result = checker(op1,op2,result);
     if (result.type == INT_TYPE) {
         result.value = round(hypot(op1.value, op2.value));
@@ -385,14 +437,34 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
     return result;
 }
 
-void evalUnary (FUNC_AST_NODE *func) {
+RET_VAL evalUnary (FUNC_AST_NODE *func) {
     if (func->opList == NULL) {
         printf("too few aguments \n");
         exit(-1);
     }
-    if (func->opList->next->next == NULL) {
+    if (func->opList->next != NULL) {
         printf("too many arguments");
     }
+    RET_VAL op = eval(func->opList);
+    return op;
+}
+
+void evalBinary (FUNC_AST_NODE *func) {
+    if (func->opList == NULL) {
+        // error
+        printf("too few");
+    }
+
+    if (func->opList->next == NULL) {
+        // error
+        printf("too few");
+    }
+
+    if (func->opList->next->next != NULL) {
+        printf("too many");
+    }
+    func->opList->data.number = eval(func->opList);
+    func->opList->next->data.number = eval(func->opList->next);
 }
 
 
@@ -408,68 +480,67 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
 
 
 
-    RET_VAL op1rv = eval(funcNode->opList);
+    RET_VAL op1rv = DEFAULT_RET_VAL;
     RET_VAL op2rv = DEFAULT_RET_VAL;
-    if (funcNode->opList->next != NULL) {
+    /*if (funcNode->opList->next != NULL) {
         op2rv = eval(funcNode->opList->next);
-    }
+    }*/
 
     switch (funcNode->oper) {
         case NEG_OPER:
-            // do something
-            result = negHelper(op1rv, result);
+            result = negHelper(op1rv, funcNode);
             break;
         case ABS_OPER:
-            result = absHelper(op1rv, result);
+            result = absHelper(op1rv, funcNode);
             break;
         case EXP_OPER:
-            result = expHelper(op1rv, result);
+            result = expHelper(op1rv, funcNode);
             break;
         case SQRT_OPER:
-            result = sqrtHelper(op1rv, result);
+            result = sqrtHelper(op1rv, funcNode);
             break;
         case ADD_OPER:
             result = addHelper(funcNode, result);
             break;
         case SUB_OPER:
-            result = subHelper(op1rv, op2rv, result);
+            result = subHelper(op1rv, op2rv, funcNode);
             break;
         case MULT_OPER:
             result = multHelper(funcNode, result);
             break;
         case DIV_OPER:
-            result = divHelper(op1rv, op2rv, result);
+            result = divHelper(op1rv, op2rv, funcNode);
             break;
         case REMAINDER_OPER:
-            result = remainderHelper(op1rv, op2rv, result);
+            result = remainderHelper(op1rv, op2rv, funcNode);
             break;
         case LOG_OPER:
-            result = logHelper(op1rv, result);
+            result = logHelper(op1rv, funcNode);
             break;
         case POW_OPER:
-            result = powerHelper(op1rv, op2rv, result);
+            result = powerHelper(op1rv, op2rv, funcNode);
             break;
         case MAX_OPER:
-            result = maxHelper(op1rv, op2rv, result);
+            result = maxHelper(op1rv, op2rv, funcNode);
             break;
         case MIN_OPER:
-            result = minHelper(op1rv, op2rv, result);
+            result = minHelper(op1rv, op2rv, funcNode);
             break;
         case EXP2_OPER:
-            result = exp2Helper(op1rv, result);
+            result = exp2Helper(op1rv, funcNode);
             break;
         case CBRT_OPER:
-            result = cbrtHelper(op1rv, result);
+            result = cbrtHelper(op1rv, funcNode);
             break;
         case HYPOT_OPER:
-            result = hypotHelper(op1rv, op2rv, result);
+            result = hypotHelper(op1rv, op2rv, funcNode);
             break;
         case READ_OPER:
             break;
         case RAND_OPER:
             break;
         case PRINT_OPER:
-            result = printHelper(funcNode->opList, result);
+            result = printHelper(funcNode, result);
             break;
         case EQUAL_OPER:
             break;
@@ -485,10 +556,10 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
     return result;
 }
 
-RET_VAL printHelper (AST_NODE *op, RET_VAL result) {
-    while (op != NULL) {
-        result = eval(op);
-        op = op->next;
+RET_VAL printHelper (FUNC_AST_NODE *func, RET_VAL result) {
+    while (func->opList != NULL) {
+        result = eval(func->opList);
+        func->opList = func->opList->next;
     }
     return result;
 }
