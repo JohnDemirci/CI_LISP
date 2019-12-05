@@ -6,20 +6,20 @@
     double dval;
     char *sval;
     struct ast_node *astNode;
-    struct symbol_table_node *symNode;
+    struct symbol_table_node *symbolNode;
 }
 
 %token <sval> FUNC SYMBOL
 %token <dval> INT_LITERAL DOUBLE_LITERAL
 %token LPAREN RPAREN EOL QUIT LET INT DOUBLE
 
-%type <astNode> s_expr f_expr number symbol s_expr_list
-%type <symNode> let_elem let_section let_list
-
+%type <astNode> s_expr_list s_expr f_expr number
+%type <symbolNode> let_list let_elem let_section
 %%
 
 program:
-    s_expr EOL {
+    s_expr EOL
+    {
         fprintf(stderr, "yacc: program ::= s_expr EOL\n");
         if ($1) {
             printRetVal(eval($1));
@@ -28,119 +28,127 @@ program:
     };
 
 s_expr:
-    number {
+
+    number
+    {
         fprintf(stderr, "yacc: s_expr ::= number\n");
         $$ = $1;
     }
-    | symbol {
-    	fprintf(stderr, "yacc: s_expr ::= symbol\n");
-    	$$ = $1;
+    | SYMBOL
+    {
+            fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
+            $$ = createSymbolNode($1);
     }
-    | f_expr {
+    | LPAREN let_section s_expr RPAREN
+    {
+    	    fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
+            $$ = linkSymbolNode($2,$3);
+    }
+    | f_expr
+    {
     	fprintf(stderr, "yacc: s_expr ::= f_expr\n");
         $$ = $1;
     }
-    | QUIT {
+    | QUIT
+    {
         fprintf(stderr, "yacc: s_expr ::= QUIT\n");
         exit(EXIT_SUCCESS);
     }
-    | error {
+    | error
+    {
         fprintf(stderr, "yacc: s_expr ::= error\n");
         yyerror("unexpected token");
         $$ = NULL;
-
-    }
-    | LPAREN let_section s_expr RPAREN {
-        fprintf(stderr, "yacc: s_expr ::= LPAREN let_section s_expr RPAREN \n");
-        $$ = linkSymbolNode($2, $3);
     };
-
-s_expr_list:
-     {
-	fprintf(stderr, "yacc: s_expr_list ::=  EMPTY\n");
-	$$ = NULL;
-     }
-     | s_expr s_expr_list {
-	fprintf(stderr, "yacc: s_expr_list ::= S_EXPR S_EXPR_LIST\n");
-	$$ = addSexprToList($1,$2);
-     }
-     | s_expr {
-	fprintf(stderr, "yacc: s_expr_list ::= S_EXPRT \n");
-	$$ = $1;
-     };
 
 number:
-    INT_LITERAL {
-     fprintf(stderr, "yacc: number ::= INT_LITERAL\n");
+    INT_LITERAL
+    {
+        fprintf(stderr, "yacc: number ::= INT\n");
         $$ = createNumberNode($1, INT_TYPE);
     }
-    | INT INT_LITERAL {
-        fprintf(stderr, "yacc: number ::= INT INT_LITERAL\n");
-        $$ = createNumberNode($2, INT_TYPE);
-    }
-    | DOUBLE INT_LITERAL {
-        fprintf(stderr, "yacc: number ::= DOUBLE INT_LITERAL\n");
-        $$ = createNumberNode($2, DOUBLE_TYPE);
-    }
-    | DOUBLE_LITERAL {
-        fprintf(stderr, "yacc: number ::= DOUBLE_LITERAL\n");
+    | DOUBLE_LITERAL
+    {
+        fprintf(stderr, "yacc: number ::= DOUBLE\n");
         $$ = createNumberNode($1, DOUBLE_TYPE);
     }
-    | INT DOUBLE_LITERAL {
-        fprintf(stderr, "yacc: number ::= INT DOUBLE_LITERAL\n");
-        $$ = createNumberNode($2, INT_TYPE);
+    | INT INT_LITERAL
+    {
+    	fprintf(stderr, "yacc: number ::= INT INT_LITERAL\n");
+       	$$ = createNumberNode($2, INT_TYPE);
     }
-    | DOUBLE DOUBLE_LITERAL {
-         fprintf(stderr, "yacc: number ::= DOUBLE DOUBLE_LITERAL\n");
-         $$ = createNumberNode($2, DOUBLE_TYPE);
-     };
-	    
+    | DOUBLE DOUBLE_LITERAL
+    {
+    	fprintf(stderr, "yacc: number ::= DOUBLE DOUBLE_LITERAL\n");
+    	$$ = createNumberNode($2, DOUBLE_TYPE);
+    }
+    | INT DOUBLE_LITERAL
+    {
+ 	fprintf(stderr, "yacc: number ::= INT DOUBLE_LITERAL\n");
+     	$$ = createNumberNode($2, INT_TYPE);
+    }
+    | DOUBLE INT_LITERAL
+    {
+    	fprintf(stderr, "yacc: number ::= DOUBLE INT_LITERAL\n");
+	$$ = createNumberNode($2, DOUBLE_TYPE);
+    };
+
 f_expr:
-    LPAREN FUNC s_expr_list RPAREN {
-        fprintf(stderr, "yacc: f_expr ::= LPAREN FUNC s_expr_list LPAREN \n");
-           $$ =  createFunctionNode($2, $3);
-    };
-
-
-let_elem:
-    LPAREN SYMBOL s_expr RPAREN {
-    	fprintf(stderr, "yacc: let_elem ::= LPAREN SYMBOL s_expr RPAREN\n");
-    	$$ = createSymbolTableNode($2, $3, NO_TYPE);
-    }
-    | LPAREN INT SYMBOL s_expr RPAREN {
-        fprintf(stderr, "yacc: let_elem ::= LPAREN INT SYMBOL s_expr RPAREN\n");
-        $$ = createSymbolTableNode($3, $4, INT_TYPE);
-     }
-    | LPAREN DOUBLE SYMBOL s_expr RPAREN {
-        fprintf(stderr, "yacc: let_elem ::= LPAREN DOUBLE SYMBOL s_expr RPAREN\n");
-        $$ = createSymbolTableNode($3, $4, DOUBLE_TYPE);
-    };
-
-let_list:
-    LET let_elem {
-    	fprintf(stderr, "yacc: let_list ::= LET let_elem\n");
-        $$ = $2;
-    }
-    | let_list  let_elem  {
-    	fprintf(stderr, "yacc: let_list ::= let_list  let_elem\n");
-    	$$ = addToSymbolTable($1, $2);
+    LPAREN FUNC s_expr_list RPAREN
+    {
+        fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC s_expr_list RPAREN\n");
+        $$ = createFunctionNode($2, $3);
     };
 
 let_section:
     /* <empty> */ {
-    	fprintf(stderr, "yacc: let_section ::= <empty>\n");
-    	$$ = NULL;
+    	$$=NULL;
     }
-    | LPAREN let_list RPAREN {
-    	fprintf(stderr, "yacc: let_section ::= LPAREN let_list RPAREN\n");
-    	$$ = $2;
+    | LPAREN let_list RPAREN
+    {
+    	fprintf(stderr, "yacc: s_expr ::= LPAREN let_list RPAREN\n");
+    	$$=$2;
     };
-
-symbol:
-     SYMBOL {
-     	fprintf(stderr, "yacc: symbol ::= SYMBOL\n");
-     	$$ = createSymbolNode($1);
-     };
-
+let_list:
+    LET let_elem
+    {
+    	fprintf(stderr, "yacc: s_expr ::= let let_list");
+        $$=$2;
+    }
+    | let_list let_elem
+    {
+    	fprintf(stderr, "yacc: s_expr ::= let_list let_elem");
+    	$$=addToSymbolTable($1, $2);
+    };
+let_elem:
+    LPAREN SYMBOL s_expr RPAREN
+    {
+    	fprintf(stderr, "yacc: s_expr ::= LPAREN symbol expr RPAREN\n");
+    	$$=createSymbolTableNode($2,$3,NO_TYPE);
+    }
+    | LPAREN INT SYMBOL s_expr RPAREN
+    {
+    	fprintf(stderr, "yacc: s_expr ::= LPAREN symbol expr RPAREN\n");
+        $$=createSymbolTableNode($3,$4,INT_TYPE);
+    }
+    | LPAREN DOUBLE SYMBOL s_expr RPAREN
+    {
+    	fprintf(stderr, "yacc: s_expr ::= LPAREN symbol expr RPAREN\n");
+        $$=createSymbolTableNode($3,$4,DOUBLE_TYPE);
+    };
+s_expr_list:
+    s_expr
+    {
+    	fprintf(stderr, "yacc: s_expr_list ::= s_expr s_expr_list\n");
+    	$$=$1;
+    }
+    | /* <empty> */{
+    	$$=NULL;
+    }
+    | s_expr s_expr_list
+    {
+    	fprintf(stderr, "yacc: s_expr_list ::= s_expr s_expr_list\n");
+    	$$=addSexprToList($2,$1);
+    }
 %%
 
