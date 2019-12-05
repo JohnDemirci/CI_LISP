@@ -56,18 +56,18 @@ s_expr:
     };
 
 s_expr_list:
-	{
-		printf(stderr, "yacc: s_expr_list ::=  EMPTY\n");
-		$$ = NULL;
-	}
-	| s_expr s_expr_list {
-		printf(stderr, "yacc: s_expr_list ::= S_EXPR S_EXPR_LIST\n");
-		$$ = addSexprToList($1,$2);
-	}
-	| s_expr {
-		printf(stderr, "yacc: s_expr_list ::= S_EXPRT \n");
-		$$ = $1;
-	};
+     {
+	fprintf(stderr, "yacc: s_expr_list ::=  EMPTY\n");
+	$$ = NULL;
+     }
+     | s_expr s_expr_list {
+	fprintf(stderr, "yacc: s_expr_list ::= S_EXPR S_EXPR_LIST\n");
+	$$ = addSexprToList($1,$2);
+     }
+     | s_expr {
+	fprintf(stderr, "yacc: s_expr_list ::= S_EXPRT \n");
+	$$ = $1;
+     };
 
 number:
     INT_LITERAL {

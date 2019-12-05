@@ -78,9 +78,6 @@ AST_NODE *createSymbolNode(char *ident) {
 
 AST_NODE *createNumberNode(double value, NUM_TYPE type) {
     AST_NODE *node = makeNewNode(NUM_NODE_TYPE);
-
-
-
     node->data.number.type = type;
     node->data.number.value = value;
     return node;
@@ -95,12 +92,9 @@ AST_NODE *createNumberNode(double value, NUM_TYPE type) {
 // SEE: AST_NODE, FUNC_AST_NODE, AST_NODE_TYPE.
 AST_NODE *createFunctionNode(char *funcName, AST_NODE *op) {
     AST_NODE *node = makeNewNode(FUNC_NODE_TYPE);
-
-
     node->data.function.ident = funcName;
     node->data.function.oper = resolveFunc(funcName);
     node->data.function.opList = op;
-
     AST_NODE *temp;
     temp = op;
     while (temp != NULL) {
@@ -167,14 +161,11 @@ RET_VAL evalSymbolNode(AST_NODE *node)
     if (!node) {
         return DEFAULT_RET_VAL;
     }
-
     SYMBOL_TABLE_NODE *john = findSymbol(node->data.symbol.ident, node);
     if (!john) {
         yyerror("Unexpected Identifier");
         return DEFAULT_RET_VAL;
     }
-
-
     switch (john->val_type) {
         case INT_TYPE:
             // type declared as int
@@ -187,8 +178,6 @@ RET_VAL evalSymbolNode(AST_NODE *node)
         default:
             yyerror("error");
     }
-
-
     return eval(john->val);
 }
 
@@ -480,6 +469,7 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
         case RAND_OPER:
             break;
         case PRINT_OPER:
+            result = printHelper(funcNode->opList, result);
             break;
         case EQUAL_OPER:
             break;
@@ -491,6 +481,14 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
             break;
         default:
             printf("oof");
+    }
+    return result;
+}
+
+RET_VAL printHelper (AST_NODE *op, RET_VAL result) {
+    while (op != NULL) {
+        result = eval(op);
+        op = op->next;
     }
     return result;
 }
@@ -508,10 +506,8 @@ void printRetVal(RET_VAL val) {
             printf("\ntype: Int");
             printf("\nvalue: %d", (int) val.value);
             break;
-        case NO_TYPE:
-            printf("\ntype: Int");
-            printf("\nvalue: %d", (int) val.value);
-            break;
+        default:
+           printf("no int no nothing");
     }
 }
 
