@@ -13,7 +13,7 @@
 %token <dval> INT_LITERAL DOUBLE_LITERAL
 %token LPAREN RPAREN EOL QUIT LET INT DOUBLE
 
-%type <astNode> s_expr f_expr number symbol
+%type <astNode> s_expr f_expr number symbol s_expr_list
 %type <symNode> let_elem let_section let_list
 
 %%
@@ -55,6 +55,20 @@ s_expr:
         $$ = linkSymbolNode($2, $3);
     };
 
+s_expr_list:
+	{
+		printf(stderr, "yacc: s_expr_list ::=  EMPTY\n");
+		$$ = NULL;
+	}
+	| s_expr s_expr_list {
+		printf(stderr, "yacc: s_expr_list ::= S_EXPR S_EXPR_LIST\n");
+		$$ = addSexprToList($1,$2);
+	}
+	| s_expr {
+		printf(stderr, "yacc: s_expr_list ::= S_EXPRT \n");
+		$$ = $1;
+	};
+
 number:
     INT_LITERAL {
      fprintf(stderr, "yacc: number ::= INT_LITERAL\n");
@@ -80,19 +94,11 @@ number:
          fprintf(stderr, "yacc: number ::= DOUBLE DOUBLE_LITERAL\n");
          $$ = createNumberNode($2, DOUBLE_TYPE);
      };
-
-s_expr_list:
-	s_expr {
-                $$ = $1;
-            }
-	    | s_expr s_expr_list {
-		$$ = addSexprToList($1,$2);
-	    };
 	    
 f_expr:
     LPAREN FUNC s_expr_list LPAREN {
-        fprintf(stderr, "yacc: number ::= LPAREN FUNC s_expr_list LPAREN \n");
-            createFunctionNode($2, $3);
+        fprintf(stderr, "yacc: f_expr ::= LPAREN FUNC s_expr_list LPAREN \n");
+           $$ =  createFunctionNode($2, $3);
     };
 
 
