@@ -263,10 +263,20 @@ RET_VAL sqrtHelper(RET_VAL op1, RET_VAL result) {
     return result;
 }
 
-RET_VAL addHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
-    result.value = op1.value + op2.value;
-    if (op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE) {
-        result.type = DOUBLE_TYPE;
+RET_VAL addHelper(FUNC_AST_NODE *list, RET_VAL result) {
+    RET_VAL temp;
+    AST_NODE *oplist1 = list->opList;
+    int value = (list->oper == ADD_OPER)? 0:1;
+    result.value = value;
+    while (oplist1 != NULL) {
+
+        temp = eval(oplist1);
+        result.value += temp.value;
+
+        if (temp.type == DOUBLE_TYPE) {
+            result.type = DOUBLE_TYPE;
+        }
+        oplist1 = oplist1->next;
     }
     return result;
 }
@@ -277,9 +287,21 @@ RET_VAL subHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
     return result;
 }
 
-RET_VAL multHelper(RET_VAL op1, RET_VAL op2, RET_VAL result) {
-    result.value = op1.value * op2.value;
-    result = checker(op1,op2,result);
+RET_VAL multHelper (FUNC_AST_NODE *list, RET_VAL result) {
+    RET_VAL temp;
+    AST_NODE *oplist1 = list->opList;
+    int value = (list->oper == ADD_OPER)? 0:1;
+    result.value = value;
+    while (oplist1 != NULL) {
+
+        temp = eval(oplist1);
+        result.value = result.value * temp.value;
+
+        if (temp.type == DOUBLE_TYPE) {
+            result.type = DOUBLE_TYPE;
+        }
+        oplist1 = oplist1->next;
+    }
     return result;
 }
 
@@ -374,6 +396,16 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
     return result;
 }
 
+void evalUnary (FUNC_AST_NODE *func) {
+    if (func->opList == NULL) {
+        printf("too few aguments \n");
+        exit(-1);
+    }
+    if (func->opList->next->next == NULL) {
+        printf("too many arguments");
+    }
+}
+
 
 
 
@@ -408,13 +440,13 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
             result = sqrtHelper(op1rv, result);
             break;
         case ADD_OPER:
-            result = addHelper(op1rv, op2rv, result);
+            result = addHelper(funcNode, result);
             break;
         case SUB_OPER:
             result = subHelper(op1rv, op2rv, result);
             break;
         case MULT_OPER:
-            result = multHelper(op1rv, op2rv, result);
+            result = multHelper(funcNode, result);
             break;
         case DIV_OPER:
             result = divHelper(op1rv, op2rv, result);
@@ -448,7 +480,6 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
         case RAND_OPER:
             break;
         case PRINT_OPER:
-
             break;
         case EQUAL_OPER:
             break;
