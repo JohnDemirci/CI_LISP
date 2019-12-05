@@ -96,7 +96,7 @@ number:
      };
 	    
 f_expr:
-    LPAREN FUNC s_expr_list LPAREN {
+    LPAREN FUNC s_expr_list RPAREN {
         fprintf(stderr, "yacc: f_expr ::= LPAREN FUNC s_expr_list LPAREN \n");
            $$ =  createFunctionNode($2, $3);
     };
