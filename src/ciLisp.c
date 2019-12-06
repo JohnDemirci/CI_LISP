@@ -95,10 +95,9 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op) {
     node->data.function.ident = funcName;
     node->data.function.oper = resolveFunc(funcName);
     node->data.function.opList = op;
-    AST_NODE *temp;
-    temp = op;
-    while (temp != NULL) {
-        node->parent = node;
+    AST_NODE *temp = node->data.function.opList;
+    while ( temp != NULL) {
+        temp->parent = node;
         temp = temp->next;
     }
     return node;
@@ -112,10 +111,19 @@ void freeNode(AST_NODE *node) {
     if (!node)
         return;
 
+
     if (node->type == FUNC_NODE_TYPE) {
         // Recursive calls to free child nodes
-        freeNode(node->data.function.opList);
-        freeNode(node->data.function.opList->next);
+//        freeNode(node->data.function.opList);
+//        freeNode(node->data.function.opList->next);
+        AST_NODE *tmp;
+        while (node->data.function.opList != NULL)
+        {
+            tmp = node->data.function.opList;
+            node->data.function.opList = node->data.function.opList->next;
+            free(tmp);
+        }
+
 
         // Free up identifier string if necessary
         if (node->data.function.oper == CUSTOM_OPER) {
@@ -166,19 +174,23 @@ RET_VAL evalSymbolNode(AST_NODE *node)
         yyerror("Unexpected Identifier");
         return DEFAULT_RET_VAL;
     }
+    RET_VAL result = eval(john->val);
     switch (john->val_type) {
         case INT_TYPE:
             // type declared as int
-            if (john->val->data.number.type == DOUBLE_TYPE) {
+            if (result.type == DOUBLE_TYPE) {
                 printf("\nWARNING: precision loss in the assignment for variable \n");
-                john->val->data.number.value = floor(john->val->data.number.value);
-                john->val->data.number.type = INT_TYPE;
+                result.value = floor(result.value);
+                result.type = INT_TYPE;
             }
             break;
-        default:
-            yyerror("error");
+        case DOUBLE_TYPE:
+            if (john->val_type == DOUBLE_TYPE && result.type == INT_TYPE)
+            {
+                result.type = DOUBLE_TYPE;
+            }
     }
-    return eval(john->val);
+    return result;
 }
 
 SYMBOL_TABLE_NODE *findSymbol(char *ident, AST_NODE *s_expr) {
@@ -268,10 +280,8 @@ RET_VAL addHelper(FUNC_AST_NODE *list, RET_VAL result) {
     int value = (list->oper == ADD_OPER)? 0:1;
     result.value = value;
     while (oplist1 != NULL) {
-
         temp = eval(oplist1);
-        result.value += temp.value;
-
+        result.value = result.value + temp.value;
         if (temp.type == DOUBLE_TYPE) {
             result.type = DOUBLE_TYPE;
         }
@@ -282,10 +292,12 @@ RET_VAL addHelper(FUNC_AST_NODE *list, RET_VAL result) {
 
 RET_VAL subHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *func) {
     evalBinary(func);
-    op1 = func->opList->data.number;
-    op2 = func->opList->next->data.number;
+    op1 = eval(func->opList);
+    op2 = eval(func->opList->next);
+//    op1 = func->opList->data.number;
+//    op2 = func->opList->next->data.number;
     RET_VAL result = DEFAULT_RET_VAL;
-    result.value = op1.value - op2.value;
+    result.value = op2.value - op1.value ;
     result = checker(op1,op2,result);
     return result;
 }
@@ -310,8 +322,8 @@ RET_VAL multHelper (FUNC_AST_NODE *list, RET_VAL result) {
 
 RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
     evalBinary(funcNode);
-    op1 = funcNode->opList->data.number;
-    op2 = funcNode->opList->next->data.number;
+    op1 = eval(funcNode->opList);
+    op2 = eval(funcNode->opList->next);
     RET_VAL result = DEFAULT_RET_VAL;
     result = checker(op1,op2,result);
     if (result.type == INT_TYPE) {
@@ -324,8 +336,8 @@ RET_VAL remainderHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
 
 RET_VAL divHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
     evalBinary(funcNode);
-    op1 = funcNode->opList->data.number;
-    op2 = funcNode->opList->next->data.number;
+    op1 = eval(funcNode->opList);
+    op2 = eval(funcNode->opList->next);
     RET_VAL result = DEFAULT_RET_VAL;
 
     result = checker(op1,op2,result);
@@ -352,8 +364,8 @@ RET_VAL logHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
 
 RET_VAL powerHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
     evalBinary(funcNode);
-    op1 = funcNode->opList->data.number;
-    op2 = funcNode->opList->next->data.number;
+    op1 = eval(funcNode->opList);
+    op2 = eval(funcNode->opList->next);
     RET_VAL result = DEFAULT_RET_VAL;
 
     result = checker(op1,op2,result);
@@ -363,8 +375,8 @@ RET_VAL powerHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
 
 RET_VAL maxHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
     evalBinary(funcNode);
-    op1 = funcNode->opList->data.number;
-    op2 = funcNode->opList->next->data.number;
+    op1 = eval(funcNode->opList);
+    op2 = eval(funcNode->opList->next);
     RET_VAL result = DEFAULT_RET_VAL;
 
     result = checker(op1,op2,result);
@@ -374,8 +386,8 @@ RET_VAL maxHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
 
 RET_VAL minHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
     evalBinary(funcNode);
-    op1 = funcNode->opList->data.number;
-    op2 = funcNode->opList->next->data.number;
+    op1 = eval(funcNode->opList);
+    op2 = eval(funcNode->opList->next);
     RET_VAL result = DEFAULT_RET_VAL;
 
     result = checker(op1,op2,result);
@@ -386,7 +398,7 @@ RET_VAL minHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
 RET_VAL exp2Helper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
     RET_VAL result = DEFAULT_RET_VAL;
     op1 = evalUnary(funcNode);
-
+    op1 = eval(funcNode->opList);
     result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(exp(op1.value));
@@ -411,8 +423,8 @@ RET_VAL cbrtHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
 
 RET_VAL hypotHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
     evalBinary(funcNode);
-    op1 = funcNode->opList->data.number;
-    op2 = funcNode->opList->next->data.number;
+    op1 = eval(funcNode->opList);
+    op2 = eval(funcNode->opList->next);
     RET_VAL result = DEFAULT_RET_VAL;
 
     result = checker(op1,op2,result);
@@ -430,7 +442,7 @@ RET_VAL hypotHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
 RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
     if (!numNode)
         return (RET_VAL) {INT_TYPE, NAN};
-    RET_VAL result = {INT_TYPE, NAN};
+    RET_VAL result;
     // SEE: AST_NODE, AST_NODE_TYPE, NUM_AST_NODE
     result.value = numNode->value;
     result.type = numNode->type;
@@ -463,8 +475,8 @@ void evalBinary (FUNC_AST_NODE *func) {
     if (func->opList->next->next != NULL) {
         printf("too many");
     }
-    func->opList->data.number = eval(func->opList);
-    func->opList->next->data.number = eval(func->opList->next);
+//    func->opList->data.number = eval(func->opList);
+//    func->opList->next->data.number = eval(func->opList->next);
 }
 
 
@@ -559,6 +571,7 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
 RET_VAL printHelper (FUNC_AST_NODE *func, RET_VAL result) {
     while (func->opList != NULL) {
         result = eval(func->opList);
+        printRetVal(result);
         func->opList = func->opList->next;
     }
     return result;
@@ -610,10 +623,12 @@ AST_NODE *addSexprToList (AST_NODE *item, AST_NODE *list) {
 
 
 SYMBOL_TABLE_NODE *addToSymbolTable(SYMBOL_TABLE_NODE *list, SYMBOL_TABLE_NODE *item) {
-    if (item == NULL) {
-        item = list;
+//    if (item == NULL) {
+//        item = list;
+//    }
+    if (item != NULL) {
+        item->next = list;
     }
-    item->next = list;
     return item;
 }
 

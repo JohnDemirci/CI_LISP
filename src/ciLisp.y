@@ -148,7 +148,7 @@ s_expr_list:
     | s_expr s_expr_list
     {
     	fprintf(stderr, "yacc: s_expr_list ::= s_expr s_expr_list\n");
-    	$$=addSexprToList($2,$1);
+    	$$=addSexprToList($1,$2);
     }
 %%
 
