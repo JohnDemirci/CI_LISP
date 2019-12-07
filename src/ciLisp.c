@@ -297,7 +297,7 @@ RET_VAL subHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *func) {
 //    op1 = func->opList->data.number;
 //    op2 = func->opList->next->data.number;
     RET_VAL result = DEFAULT_RET_VAL;
-    result.value = op2.value - op1.value ;
+    result.value = op1.value - op2.value;
     result = checker(op1,op2,result);
     return result;
 }
@@ -573,6 +573,9 @@ RET_VAL printHelper (FUNC_AST_NODE *func, RET_VAL result) {
         result = eval(func->opList);
         printRetVal(result);
         func->opList = func->opList->next;
+        if (func->opList == NULL) {
+            return DEFAULT_RET_VAL;
+        }
     }
     return result;
 }
@@ -580,19 +583,26 @@ RET_VAL printHelper (FUNC_AST_NODE *func, RET_VAL result) {
 // prints the type and value of a RET_VAL
 void printRetVal(RET_VAL val) {
     // TODO print the type and value of the value passed in.
-    switch (val.type) {
-        case DOUBLE_TYPE:
-            // do something
-            printf("\ntype: Double");
-            printf("\nvalue: %lf", val.value);
-            break;
-        case INT_TYPE:
-            printf("\ntype: Int");
-            printf("\nvalue: %d", (int) val.value);
-            break;
-        default:
-           printf("no int no nothing");
+
+
+    if (isnan(val.value)) {
+    } else {
+        switch (val.type) {
+            case DOUBLE_TYPE:
+                // do something
+                printf("\ntype: Double");
+                printf("\nvalue: %lf", val.value);
+                break;
+            case INT_TYPE:
+                printf("\ntype: Int");
+                printf("\nvalue: %d", (int) val.value);
+                break;
+            default:
+                printf("oof at printRetVal");
+        }
     }
+
+
 }
 
 SYMBOL_TABLE_NODE * makeNewSymbol()
