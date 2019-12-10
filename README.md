@@ -55,9 +55,12 @@ Task3:
     -> created a preccision warning if a user inputs something like  ((let (int a 1.25))(add a 1))
 
 Task 4:
+
     -> read task 5
 
 Task5:
+
+
     -> added ( func s_expr_list ) s_expr_list ::= s_expr s_expr_list | s_expr | empty to the grammar
 
     -> created the *addSexprToList so that i would take multiple values
