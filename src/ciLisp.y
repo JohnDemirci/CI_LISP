@@ -34,32 +34,28 @@ s_expr:
         fprintf(stderr, "yacc: s_expr ::= number\n");
         $$ = $1;
     }
-    | SYMBOL
-    {
-            fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
-            $$ = createSymbolNode($1);
+    | SYMBOL {
+         fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
+         $$ = createSymbolNode($1);
     }
-    | LPAREN let_section s_expr RPAREN
-    {
-    	    fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
-            $$ = linkSymbolNode($2,$3);
+    | LPAREN let_section s_expr RPAREN {
+         fprintf(stderr, "yacc: s_expr ::= SYMBOL\n");
+         $$ = linkSymbolNode($2,$3);
     }
-    | f_expr
-    {
-		fprintf(stderr, "yacc: s_expr ::= f_expr\n");
-		$$ = $1;
+    | f_expr {
+	fprintf(stderr, "yacc: s_expr ::= f_expr\n");
+	$$ = $1;
     }
-    | QUIT
-    {
+    | QUIT {
         fprintf(stderr, "yacc: s_expr ::= QUIT\n");
         exit(EXIT_SUCCESS);
     }
-    | error
-    {
+    | error {
         fprintf(stderr, "yacc: s_expr ::= error\n");
         yyerror("unexpected token");
         $$ = NULL;
     };
+
 
 number:
     INT_LITERAL {
@@ -93,18 +89,22 @@ f_expr:
         $$ = createFunctionNode($2, $3);
     };
 
+
+
+
+
 let_section:
     {
-    	$$=NULL;
+    	$$ = NULL;
     }
     | LPAREN let_list RPAREN {
     	fprintf(stderr, "yacc: s_expr ::= LPAREN let_list RPAREN\n");
-    	$$=$2;
+    	$$ = $2;
     };
 let_list:
     LET let_elem {
     	fprintf(stderr, "yacc: s_expr ::= let let_list");
-        $$=$2;
+        $$ = $2;
     }
     | let_list let_elem {
     	fprintf(stderr, "yacc: s_expr ::= let_list let_elem");
@@ -113,7 +113,7 @@ let_list:
 let_elem:
     LPAREN SYMBOL s_expr RPAREN {
     	fprintf(stderr, "yacc: s_expr ::= LPAREN symbol expr RPAREN\n");
-    	$$=createSymbolTableNode($2,$3,NO_TYPE);
+    	$$ = createSymbolTableNode($2,$3,NO_TYPE);
     }
     | LPAREN INT SYMBOL s_expr RPAREN {
     	fprintf(stderr, "yacc: s_expr ::= LPAREN symbol expr RPAREN\n");
@@ -126,7 +126,7 @@ let_elem:
 s_expr_list:
     s_expr {
     	fprintf(stderr, "yacc: s_expr_list ::= s_expr s_expr_list\n");
-    	$$=$1;
+    	$$ = $1;
     }
     | {
     	$$ = NULL;

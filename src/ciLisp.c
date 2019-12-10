@@ -189,26 +189,26 @@ RET_VAL evalSymbolNode(AST_NODE *node)
             {
                 result.type = DOUBLE_TYPE;
             }
+            break;
     }
     return result;
 }
 
 SYMBOL_TABLE_NODE *findSymbol(char *ident, AST_NODE *s_expr) {
-    //Did the father step out for some cigarettes and never return?
+
     if (s_expr == NULL)
         return NULL;
-    //Grab the symbol table for this scope
+
     SYMBOL_TABLE_NODE *node = s_expr->symbolTable;
-    //Iterate till at end of scope list or found our boy
     while (node != NULL && strcmp(ident, node->ident) != 0) {
         node = node->next;
     }
-    //Did we not find our boy?
+
     if (node == NULL) {
-        //Ask his dad
+
         node = findSymbol(ident, s_expr->parent);
     }
-    //return our boy (possibly)
+
     return node;
 }
 
@@ -251,25 +251,25 @@ RET_VAL absHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
 }
 
 RET_VAL expHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
-    RET_VAL result = DEFAULT_RET_VAL;
     op1 = evalUnary(funcNode);
 
-    if (result.type == INT_TYPE) {
-        result.value = round(exp(op1.value));
-        return result;
+    if (op1.type == INT_TYPE) {
+        op1.value = round(exp(op1.value));
+        return op1;
     }
-    result.value = exp(op1.value);
-    return result;
+    op1.value = exp(op1.value);
+    return op1;
 }
 
 RET_VAL sqrtHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
     RET_VAL result = DEFAULT_RET_VAL;
     op1 = evalUnary(funcNode);
 
-    if (result.type == INT_TYPE) {
+    if (op1.type == INT_TYPE) {
         result.value = round(sqrt(op1.value));
         return result;
     }
+    result.type = op1.type;
     result.value = sqrt(op1.value);
     return result;
 }
@@ -352,7 +352,6 @@ RET_VAL divHelper(RET_VAL op1, RET_VAL op2, FUNC_AST_NODE *funcNode) {
 RET_VAL logHelper(RET_VAL op1, FUNC_AST_NODE *funcNode) {
     RET_VAL result = DEFAULT_RET_VAL;
     op1 = evalUnary(funcNode);
-
     result = checkerWithOneOperan(op1,result);
     if (result.type == INT_TYPE) {
         result.value = round(log(op1.value));
@@ -444,6 +443,10 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode) {
         return (RET_VAL) {INT_TYPE, NAN};
     RET_VAL result;
     // SEE: AST_NODE, AST_NODE_TYPE, NUM_AST_NODE
+
+
+
+
     result.value = numNode->value;
     result.type = numNode->type;
     return result;
@@ -465,18 +468,37 @@ void evalBinary (FUNC_AST_NODE *func) {
     if (func->opList == NULL) {
         // error
         printf("too few");
+        func->opList->data.number = DEFAULT_RET_VAL;
     }
 
     if (func->opList->next == NULL) {
         // error
-        printf("too few");
+        printf("too few entries");
+        func->opList->data.number = DEFAULT_RET_VAL;
     }
 
     if (func->opList->next->next != NULL) {
-        printf("too many");
+        printf("too many entries");
+        exit(2);
     }
 //    func->opList->data.number = eval(func->opList);
 //    func->opList->next->data.number = eval(func->opList->next);
+}
+
+RET_VAL randomHelper (FUNC_AST_NODE *func, RET_VAL result) {
+    double randomValue;
+    randomValue = (double)rand() / (double)RAND_MAX;
+    func->opList = createNumberNode(randomValue, DOUBLE_TYPE);
+    result = eval(func->opList);
+    return result;
+}
+RET_VAL readHelper (FUNC_AST_NODE* func, RET_VAL result) {
+    printf("READ :=  ");
+    double value;
+    scanf("%lf", &value);
+    func->opList = createNumberNode(value, DOUBLE_TYPE);
+    result = eval(func->opList);
+    return result;
 }
 
 
@@ -548,11 +570,13 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
             result = hypotHelper(op1rv, op2rv, funcNode);
             break;
         case READ_OPER:
+            result = readHelper(funcNode, op1rv);
             break;
         case RAND_OPER:
+            result = randomHelper(funcNode, op1rv);
             break;
         case PRINT_OPER:
-            result = printHelper(funcNode, result);
+            result = printHelper(funcNode, op1rv);
             break;
         case EQUAL_OPER:
             break;
@@ -568,6 +592,10 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode) {
     return result;
 }
 
+
+
+
+
 RET_VAL printHelper (FUNC_AST_NODE *func, RET_VAL result) {
     while (func->opList != NULL) {
         result = eval(func->opList);
@@ -582,10 +610,9 @@ RET_VAL printHelper (FUNC_AST_NODE *func, RET_VAL result) {
 
 // prints the type and value of a RET_VAL
 void printRetVal(RET_VAL val) {
-    // TODO print the type and value of the value passed in.
-
 
     if (isnan(val.value)) {
+    } else if (isinf(val.value)) {
     } else {
         switch (val.type) {
             case DOUBLE_TYPE:
@@ -596,6 +623,9 @@ void printRetVal(RET_VAL val) {
             case INT_TYPE:
                 printf("\ntype: Int");
                 printf("\nvalue: %d", (int) val.value);
+                break;
+            case NO_TYPE:
+                printf("\nread value: %lf", val.value);
                 break;
             default:
                 printf("oof at printRetVal");

@@ -54,8 +54,15 @@ OPER_TYPE resolveFunc(char *);
 typedef enum {
     NUM_NODE_TYPE,
     FUNC_NODE_TYPE,
-    SYMBOL_NODE_TYPE
+    SYMBOL_NODE_TYPE,
+    COND_NODE_TYPE
 } AST_NODE_TYPE;
+
+typedef struct {
+    struct ast_node *cond;
+    struct ast_node *tru; // to eval if cond is nonzero
+    struct ast_node *fals; // to eval if cond is zero
+} COND_AST_NODE;
 
 // Types of numeric values
 typedef enum { NO_TYPE, INT_TYPE, DOUBLE_TYPE } NUM_TYPE;
@@ -99,6 +106,7 @@ typedef struct ast_node {
     union {
         NUM_AST_NODE number;
         FUNC_AST_NODE function;
+        COND_AST_NODE condition;
         SYMBOL_AST_NODE symbol;
     } data;
     struct ast_node *next;

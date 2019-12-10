@@ -1,0 +1,288 @@
+Task 1
+
+> (add 2 3)
+
+type: Int
+value: 5
+> (add 2.3 5)
+
+type: Double
+value: 7.300000
+> (add 5.5 3.4)
+
+type: Double
+value: 8.900000
+> (add 3 5.2)
+
+type: Double
+value: 8.200000
+> (neg 5)
+
+type: Int
+value: -5
+> (neg 9.4)
+
+type: Double
+value: -9.400000
+> (neg -5)
+
+type: Int
+value: 5
+> (abs 33)
+
+type: Int
+value: 33
+> (abs 4.5)
+
+type: Double
+value: 4.500000
+> (sqrt 5)
+
+type: Int
+value: 2
+> (sqrt 5.4)
+
+type: Double
+value: 2.323790
+> (exp 3.5)
+
+type: Double
+value: 33.115452
+> (exp 3)
+
+type: Int
+value: 20
+> (sub 3 2)
+
+type: Int
+value: 1
+> (sub 5 3.2)
+
+type: Double
+value: 1.800000
+> (sub 4 -23)
+
+type: Int
+value: 27
+> (mult 3 5)
+
+type: Int
+value: 15
+> (mult 3.4 6.5)
+
+type: Double
+value: 22.100000
+> (mult 2.3 4)
+
+type: Double
+value: 9.200000
+> (div 10 2)
+
+type: Int
+value: 5
+> (div 5 10)
+
+type: Int
+value: 1
+> (dic 4 2)
+
+// error -> typo
+
+> (div 4 0)
+// nothing to return
+
+> (remainder 4 5)
+
+type: Int
+value: -1
+> (remainder 5 4)
+
+type: Int
+value: 1
+> (remainder 3.2 11)
+
+type: Double
+value: 3.200000
+> (log 2)
+
+type: Int
+value: 1
+> (log 2.3)
+
+type: Double
+value: 0.832909
+> (pow 2 3)
+
+type: Int
+value: 8
+> (pow 3 2.3)
+
+type: Double
+value: 12.513503
+> (max 2 3)
+
+type: Int
+value: 3
+> (max 2 4.3)
+
+type: Double
+value: 4.300000
+> (max 2.3 5.4)
+
+type: Double
+value: 5.400000
+> (min 3 4)
+
+type: Int
+value: 3
+> (min 3.2 5)
+
+type: Double
+value: 3.200000
+> (exp2 2.3)
+
+type: Double
+value: 9.974182
+> (exp2 4)
+
+type: Int
+value: 55
+> (hypot 3 4)
+
+type: Int
+value: 5
+> (hypot 2.3 5)
+
+type: Double
+value: 5.503635
+
+
+Task 2
+
+> (add ((let (abc 1)) (sub 3 abc)) 4)
+
+type: Int
+value: 6
+> (mult ((let (a 1) (b 2)) (add a b)) (sqrt 2))
+
+type: Int
+value: 3
+> (add ((let (a ((let (b 2)) (mult b (sqrt 10))))) (div a 2)) ((let (c 5)) (sqrt c)))
+
+type: Int
+value: 5
+> ((let (first (sub 5 1)) (second 2)) (add (pow 2 first) (sqrt second)))
+
+type: Int
+value: 17
+> ((let (abc 1)) (sub ((let (abc 2) (de 3)) (add abc de)) abc))
+
+type: Int
+value: 4
+> ((let (abc 1)) (sub ((let (abc 2)) (add abc de)) abc))
+// error
+
+> ((let (first (sub 5 1)) (second 2)) (add (pow 2 first) (sqrt second)))
+
+type: Int
+value: 17
+> (add ((let (a ((let (b 2)) (mult b (sqrt 10))))) (div a 2)) ((let (c 5)) (sqrt c)))
+
+type: Int
+value: 5
+
+_______________
+Task 3
+---------------
+
+> ((let (int a 1.25))(add a 1))
+
+WARNING: precision loss in the assignment for variable 
+
+type: Int
+value: 2
+> ((let (int a 5))(add a 1))
+
+type: Int
+value: 6
+
+_____________
+Task 4
+--------------
+> (print 5)
+
+type: Int
+value: 5
+> (print 3.4)
+
+type: Double
+value: 3.400000
+
+_________________
+Task 5
+-----------------
+
+>  (add 1 2 3 4 5)
+
+type: Int
+value: 15
+
+> (mult 3 4 5)
+
+type: Int
+value: 60
+
+> (print 1 2 3 4 5)
+
+type: Int
+value: 1
+type: Int
+value: 2
+type: Int
+value: 3
+type: Int
+value: 4
+type: Int
+value: 5
+> ((let (int a 1)(double b 2))(print a b 3))
+
+type: Int
+value: 1
+type: Double
+value: 2.000000
+type: Int
+value: 3
+> (sub 2 3 4)
+too many entries
+Process finished with exit code 2
+> (hypot 2)
+
+Process finished with exit code 11
+
+
+_______________
+Task 6
+---------------
+// contains flaws and incomplete -> will touch on that in the readme
+> (read)
+READ :=  31
+
+type: Double
+value: 31.000000
+> (add 3 (read))
+READ :=  5
+
+type: Double
+value: 8.000000
+> (rand)
+
+type: Double
+value: 0.000008
+> (add 4 (rand))
+
+type: Double
+value: 4.131538
+> (add 4.3 (rand))
+
+type: Double
+value: 5.055605
